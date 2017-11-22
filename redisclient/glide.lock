@@ -1,5 +1,5 @@
 hash: fdf11f12344c6e336d9d67c03fc6d195a46541a28d04bea3c92262dfcaa491ff
-updated: 2017-11-22T15:20:15.555429+08:00
+updated: 2017-11-22T15:31:20.355861+08:00
 imports:
 - name: github.com/garyburd/redigo
   version: 47dc60e71eed504e3ef8e77ee3c6fe720f3be57f
@@ -7,7 +7,7 @@ imports:
   - internal
   - redis
 - name: github.com/huhongda/GoToolBox
-  version: c1daccf96d084cf8417f4072b70852da161b7a5b
+  version: f37c7b6f133bb85b12eff19f2813e4eae7654961
   subpackages:
   - utils
 testImports: []

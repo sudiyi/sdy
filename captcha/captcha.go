@@ -68,12 +68,12 @@ func (c *Captcha) Sending(mobile string, params map[string]string) (bool, error)
 	newSms := sms.New(c.accessKey, c.secretKey)
 	paramBytes, err := json.Marshal(params)
 	if err != nil {
-		return false, errors.New("params to json fail")
+		return false, err
 	}
 	paramString := string(paramBytes)
 	e, err := newSms.SendOne(mobile, c.signName, c.templateCode, paramString)
 	if err != nil {
-		return false, errors.New("sms send fail")
+		return false, err
 	}
 	log.Println("send sms succeed, mobile:", mobile, paramString, e.GetRequestId())
 	return true, nil
