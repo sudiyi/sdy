@@ -1,4 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
 redisclient/vendor
-smscaptcha/vendor
+sms-captcha/vendor
