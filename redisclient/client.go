@@ -1,7 +1,6 @@
-package redis_client
+package redisclient
 
 import (
-	//"errors"
 	"errors"
 	"github.com/garyburd/redigo/redis"
 	"log"

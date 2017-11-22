@@ -1,0 +1,15 @@
+hash: 6938f9144466bc899023864fc47433b8ef295caa0888bd40a110d55315ba46ee
+updated: 2017-11-22T15:03:51.798095+08:00
+imports:
+- name: github.com/garyburd/redigo
+  version: 47dc60e71eed504e3ef8e77ee3c6fe720f3be57f
+  subpackages:
+  - internal
+  - redis
+- name: github.com/huhongda/GoToolBox
+  version: 188f92832a998b7554163996c35125cf735829b2
+  subpackages:
+  - redisclient
+  - smscaptcha
+  - utils
+testImports: []
