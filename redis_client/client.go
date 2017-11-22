@@ -17,6 +17,8 @@ type RedisClient struct {
 }
 
 const (
+	Success int = 1 // 成功
+
 	DefaultMaxIdle     int           = 3                 // 空闲连接的最大数目
 	DefaultMaxActive   int           = 1000              // 给定时间内最大连接数，为0则连接数没有限制
 	DefaultMaxWaitTime time.Duration = 180 * time.Second // Redis最大等待时间
@@ -114,6 +116,18 @@ func (client *RedisClient) Set(key, value string) (bool, error) {
 
 func (client *RedisClient) SetEx(key string, value string, seconds int) (bool, error) {
 	return redis.Bool(client.Do("SETEX", key, seconds, value))
+}
+
+func (client *RedisClient) SetNx(key string, value string, seconds int) (bool, error) {
+	res, err := redis.Int(client.Do("SETNX", key, value))
+	if err != nil {
+		return false, err
+	}
+	if res == Success {
+		return redis.Bool(client.Do("EXPIRE", key, seconds))
+	} else {
+		return false, nil
+	}
 }
 
 func (client *RedisClient) Exists(key string) (bool, error) {
