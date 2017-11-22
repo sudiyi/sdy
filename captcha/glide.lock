@@ -1,0 +1,23 @@
+hash: 0a74d340a23c238682c77b58caf1fa7085f9255f995ed653740bd6c78fe35b40
+updated: 2017-11-22T15:23:46.438812+08:00
+imports:
+- name: github.com/garyburd/redigo
+  version: 4a7d9db4333c65288dd5fc8c8de7d1f229bb09ec
+  subpackages:
+  - internal
+  - redis
+- name: github.com/GiterLab/aliyun-sms-go-sdk
+  version: f03ed002a2a5e311f5629687d0141dec646e4cc6
+  subpackages:
+  - sms
+- name: github.com/GiterLab/urllib
+  version: ea0e875f90303d1469067f22ccda69f903380a87
+- name: github.com/huhongda/GoToolBox
+  version: c1daccf96d084cf8417f4072b70852da161b7a5b
+  subpackages:
+  - redisclient
+  - smscaptcha
+  - utils
+- name: github.com/tobyzxj/uuid
+  version: aa0153c14395f4431fe668071eeda5d4a0290f95
+testImports: []
