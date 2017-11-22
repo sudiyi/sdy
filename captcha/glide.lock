@@ -1,5 +1,5 @@
 hash: 0a74d340a23c238682c77b58caf1fa7085f9255f995ed653740bd6c78fe35b40
-updated: 2017-11-22T15:26:42.585703+08:00
+updated: 2017-11-22T16:50:32.034645+08:00
 imports:
 - name: github.com/garyburd/redigo
   version: 4a7d9db4333c65288dd5fc8c8de7d1f229bb09ec
@@ -13,7 +13,7 @@ imports:
 - name: github.com/GiterLab/urllib
   version: ea0e875f90303d1469067f22ccda69f903380a87
 - name: github.com/huhongda/GoToolBox
-  version: f37c7b6f133bb85b12eff19f2813e4eae7654961
+  version: b27715dc8ca1bb6fd5029748232b7619912879ad
   subpackages:
   - captcha
   - redisclient
