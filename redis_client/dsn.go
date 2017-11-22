@@ -1,7 +1,7 @@
 package redis_client
 
 import (
-	"GoToolBox/utils"
+	"github.com/huhongda/GoToolBox/utils"
 	"net/url"
 	"strings"
 )
