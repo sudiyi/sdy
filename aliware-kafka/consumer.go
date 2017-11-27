@@ -15,27 +15,27 @@ type AliyunConsumer struct {
 	logger   *log.Logger
 }
 
-type kafkaConsumerMessageWraper struct {
+type kafkaConsumerMessageWrapper struct {
 	message *sarama.ConsumerMessage
 }
 
-func (wraper *kafkaConsumerMessageWraper) Key() []byte {
-	return wraper.message.Key
+func (wrapper *kafkaConsumerMessageWrapper) Key() []byte {
+	return wrapper.message.Key
 }
 
-func (wraper *kafkaConsumerMessageWraper) Topic() string {
-	return wraper.message.Topic
+func (wrapper *kafkaConsumerMessageWrapper) Topic() string {
+	return wrapper.message.Topic
 }
-func (wraper *kafkaConsumerMessageWraper) Value() []byte {
-	return wraper.message.Value
-}
-
-func (wraper *kafkaConsumerMessageWraper) Offset() int64 {
-	return wraper.message.Offset
+func (wrapper *kafkaConsumerMessageWrapper) Value() []byte {
+	return wrapper.message.Value
 }
 
-func (wraper *kafkaConsumerMessageWraper) Partition() int32 {
-	return wraper.message.Partition
+func (wrapper *kafkaConsumerMessageWrapper) Offset() int64 {
+	return wrapper.message.Offset
+}
+
+func (wrapper *kafkaConsumerMessageWrapper) Partition() int32 {
+	return wrapper.message.Partition
 }
 
 func (c *Client) initConfigForConsumer(offset string) *cluster.Config {
@@ -107,13 +107,17 @@ func (consumer *AliyunConsumer) run() {
 		select {
 		case msg, more := <-consumer.consumer.Messages():
 			if more {
-				consumer.messages <- &kafkaConsumerMessageWraper{msg}
+				consumer.messages <- &kafkaConsumerMessageWrapper{msg}
 			} else {
 				close(consumer.messages)
 			}
 		case notify, more := <-consumer.consumer.Notifications():
 			if more {
 				consumer.logger.Println("Kafka consumer rebalanced: %v", notify)
+			}
+		case err, more := <-consumer.consumer.Errors():
+			if more {
+				consumer.logger.Printf("Errors: %s\n", err.Error())
 			}
 		}
 	}
@@ -136,5 +140,5 @@ func (consumer *AliyunConsumer) Errors() <-chan error {
 
 // Commit commit current handle message as consumed
 func (consumer *AliyunConsumer) Commit(message Message) {
-	consumer.consumer.MarkOffset(message.(*kafkaConsumerMessageWraper).message, "")
+	consumer.consumer.MarkOffset(message.(*kafkaConsumerMessageWrapper).message, "")
 }
