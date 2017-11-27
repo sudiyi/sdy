@@ -70,12 +70,12 @@ func (c *Client) getInitialOffset(offset string) int64 {
 
 func (c *Client) initConsumer(offset string) *cluster.Config {
 	clusterCfg := c.initConfigForConsumer(offset)
-	clientCertPool, err := c.AppendValidateCertificate()
+	clientCertPool := c.AppendValidateCertificate()
 	clusterCfg.Net.TLS.Config = &tls.Config{
 		RootCAs:            clientCertPool,
 		InsecureSkipVerify: true,
 	}
-	if err = clusterCfg.Validate(); err != nil {
+	if err := clusterCfg.Validate(); err != nil {
 		msg := fmt.Sprintf("Kafka consumer config invalidate. config: %v. err: %v", *clusterCfg, err)
 		c.logger.Println(msg)
 		panic(msg)
