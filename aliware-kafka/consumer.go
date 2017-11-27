@@ -5,12 +5,37 @@ import (
 	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/bsm/sarama-cluster"
+	"log"
 )
 
-type Consumer struct {
-	consumer   *cluster.Consumer
-	consumerId string
-	topics     []string
+// AliyunConsumer .
+type AliyunConsumer struct {
+	consumer *cluster.Consumer
+	messages chan Message
+	logger   *log.Logger
+}
+
+type kafkaConsumerMessageWraper struct {
+	message *sarama.ConsumerMessage
+}
+
+func (wraper *kafkaConsumerMessageWraper) Key() []byte {
+	return wraper.message.Key
+}
+
+func (wraper *kafkaConsumerMessageWraper) Topic() string {
+	return wraper.message.Topic
+}
+func (wraper *kafkaConsumerMessageWraper) Value() []byte {
+	return wraper.message.Value
+}
+
+func (wraper *kafkaConsumerMessageWraper) Offset() int64 {
+	return wraper.message.Offset
+}
+
+func (wraper *kafkaConsumerMessageWraper) Partition() int32 {
+	return wraper.message.Partition
 }
 
 func (c *Client) initConfigForConsumer(offset string) *cluster.Config {
@@ -58,13 +83,58 @@ func (c *Client) initConsumer(offset string) *cluster.Config {
 	return clusterCfg
 }
 
-func (c *Client) NewConsumer(consumerId string, topics []string, offset string) *Consumer {
+func (c *Client) NewConsumer(consumerId string, topics []string, offset string) (*AliyunConsumer, error) {
 	clusterCfg := c.initConsumer(offset)
 	consumer, err := cluster.NewConsumer(c.servers, consumerId, topics, clusterCfg)
 	if err != nil {
 		msg := fmt.Sprintf("Create kafka consumer error: %v. config: %v", err, clusterCfg)
 		c.logger.Println(msg)
-		panic(msg)
+		return nil, err
 	}
-	return &Consumer{consumer: consumer, consumerId: consumerId, topics: topics}
+	aliyun := &AliyunConsumer{
+		consumer: consumer,
+		messages: make(chan Message),
+		logger:   c.logger,
+	}
+
+	go aliyun.run()
+
+	return aliyun, nil
+}
+
+func (consumer *AliyunConsumer) run() {
+	for {
+		select {
+		case msg, more := <-consumer.consumer.Messages():
+			if more {
+				consumer.messages <- &kafkaConsumerMessageWraper{msg}
+			} else {
+				close(consumer.messages)
+			}
+		case notify, more := <-consumer.consumer.Notifications():
+			if more {
+				consumer.logger.Println("Kafka consumer rebalanced: %v", notify)
+			}
+		}
+	}
+}
+
+// Close .
+func (consumer *AliyunConsumer) Close() {
+	consumer.consumer.Close()
+}
+
+// Messages return message chan
+func (consumer *AliyunConsumer) Messages() <-chan Message {
+	return consumer.messages
+}
+
+// Errors return error chan
+func (consumer *AliyunConsumer) Errors() <-chan error {
+	return consumer.consumer.Errors()
+}
+
+// Commit commit current handle message as consumed
+func (consumer *AliyunConsumer) Commit(message Message) {
+	consumer.consumer.MarkOffset(message.(*kafkaConsumerMessageWraper).message, "")
 }

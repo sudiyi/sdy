@@ -44,7 +44,7 @@ import(
 )
 
 client := kafka.New(servers, accessKey, password, debug, logger)
-consumer := client.NewConsumer(consumerId, topics)
+consumer := client.NewConsumer(consumerId, topics, offset)
 
 channel := consumer.consume()
 for val := range channel {
