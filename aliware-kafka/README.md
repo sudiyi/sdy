@@ -1,4 +1,4 @@
-# 阿里云kafka
+# aliware kafka
 
 ## Usage
 
@@ -11,6 +11,10 @@ glide get github.com:huhongda/GoToolBox/aliware-kafka
 ```
 
 * producer
+
+
+**Sync**
+
 ```
 import(
     "github.com:huhongda/GoToolBox/aliware-kafka"
@@ -19,6 +23,18 @@ import(
 client := kafka.New(servers, accessKey, password, debug, logger)
 producer := client.NewProducer(topic)
 producer.produce(key, content)
+```
+
+
+**Async**
+
+```
+import(
+    "github.com:huhongda/GoToolBox/aliware-kafka"
+)
+client := kafka.New(servers, accessKey, password, debug, logger)
+producer := client.NewAsyncProducer(topic)
+producer.AsyncProduce(key, content)
 ```
 
 * consumer
