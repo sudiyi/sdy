@@ -10,7 +10,7 @@ import (
 type Producer struct {
 	topic         string
 	producer      sarama.SyncProducer
-	asyncProducer sarama.AsyncProducer
+	AsyncProducer sarama.AsyncProducer
 	logger        *log.Logger
 }
 
@@ -58,6 +58,7 @@ func (c *Client) NewProducer(topic string) *Producer {
 	return &Producer{topic: topic, producer: producer, logger: c.logger}
 }
 
+// sync producer, use for little concurrency
 func (p *Producer) Produce(key string, content string) (partition int32, offset int64, err error) {
 	msg := &sarama.ProducerMessage{
 		Topic: p.topic,
@@ -71,4 +72,48 @@ func (p *Producer) Produce(key string, content string) (partition int32, offset 
 		return 0, 0, err
 	}
 	return partition, offset, nil
+}
+
+// async producer, use for many concurrency
+func (c *Client) NewAsyncProducer(topic string) *Producer {
+	mgConfig := c.initProducer()
+	asyncProducer, err := sarama.NewAsyncProducer(c.servers, mgConfig)
+	if err != nil {
+		msg := fmt.Sprintf("Kafak async producer create fail. err: %v", err)
+		c.logger.Println(msg)
+		panic(msg)
+	}
+	return &Producer{topic: topic, AsyncProducer: asyncProducer, logger: c.logger}
+}
+
+func (p *Producer) AsyncProduce(key string, content string) {
+	go func(pd sarama.AsyncProducer) {
+		errors := pd.Errors()
+		success := pd.Successes()
+
+		for {
+			select {
+			case err := <-errors:
+				if err != nil {
+					p.logger.Fatalln("FAILURE:", err)
+				}
+			case message := <-success:
+				p.logger.Printf(
+					"Topic: %s, Key: %s, Partition: %d, Offset: %d \n", message.Topic,
+					message.Key, message.Partition, message.Offset,
+				)
+			}
+		}
+	}(p.AsyncProducer)
+
+	msg := &sarama.ProducerMessage{
+		Topic: p.topic,
+		Key:   sarama.StringEncoder(key),
+		Value: sarama.StringEncoder(content),
+	}
+	p.AsyncProducer.Input() <- msg
+}
+
+func (p *Producer) AsyncClose() {
+	p.AsyncProducer.Close()
 }
