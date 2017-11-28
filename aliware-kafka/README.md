@@ -31,7 +31,10 @@ producer.produce(key, content)
 ```
 import(
     "github.com:huhongda/GoToolBox/aliware-kafka"
+    "log"
 )
+
+var logger = log.New(os.Stderr, "", log.LstdFlags)
 client := kafka.New(servers, accessKey, password, debug, logger)
 producer := client.NewAsyncProducer(topic)
 producer.AsyncProduce(key, content)
@@ -41,16 +44,37 @@ producer.AsyncProduce(key, content)
 ```
 import(
     "github.com:huhongda/GoToolBox/aliware-kafka"
+    "os"
+    "os/signal"
 )
+var logger = log.New(os.Stderr, "", log.LstdFlags)
+
+signals := make(chan os.Signal, 1)
+signal.Notify(signals, os.Interrupt)
 
 client := kafka.New(servers, accessKey, password, debug, logger)
-consumer := client.NewConsumer(consumerId, topics, offset)
+consumer, err := client.NewConsumer(consumerId, topics, offset)
+if err != nil {
+    panic(err)
+}
 
-channel := consumer.consume()
-for val := range channel {
-    fmt.Println("out: %s", val)
-    //c <- ""
-} 
+for {
+    select {
+    case msg := <-consumer.Messages():
+        fmt.Printf(
+            "Topic: %s, Key: %s, Partition: %d, Offset: %d, Content: %s \n", msg.Topic(),
+            msg.Key(), msg.Partition(), msg.Offset(), string(msg.Value()),
+        )
+        
+        // you can use the msg.Key() for the logic judge and for your business logic
+        
+        consumer.Commit(msg)
+    case <-signals:
+        fmt.Println("Stop consumer server...")
+        consumer.Close()
+        return
+    }
+}
 ```
 
 ## References
