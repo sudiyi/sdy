@@ -109,7 +109,8 @@ func (consumer *AliyunConsumer) run() {
 			if more {
 				consumer.messages <- &kafkaConsumerMessageWrapper{msg}
 			} else {
-				close(consumer.messages)
+				// maybe get the error about "close of closed channel"
+				//close(consumer.messages)
 			}
 		case notify, more := <-consumer.consumer.Notifications():
 			if more {
