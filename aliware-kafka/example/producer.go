@@ -17,7 +17,6 @@ var jsonString = `
   "consumerId": "your consumer id",
 }
 `
-var logger = log.New(os.Stderr, "", log.LstdFlags)
 
 func main() {
 	results := gjson.GetMany(jsonString, "servers", "ak", "password", "consumerId", "topics")
@@ -34,7 +33,7 @@ func main() {
 }
 
 func asyncProducer(s []string, ak, password string, topic string) {
-	client := kafka.New(s, ak, password, true, logger)
+	client := kafka.New(s, ak, password, false)
 	p := client.NewAsyncProducer(topic)
 	defer p.AsyncClose()
 
@@ -54,7 +53,7 @@ func asyncProducer(s []string, ak, password string, topic string) {
 }
 
 func syncProducer(s []string, ak, password string, topic string) {
-	client := kafka.New(s, ak, password, true, logger)
+	client := kafka.New(s, ak, password, false)
 	p := client.NewProducer(topic)
 
 	var i int

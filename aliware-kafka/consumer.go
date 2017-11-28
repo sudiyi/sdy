@@ -12,7 +12,6 @@ import (
 type AliyunConsumer struct {
 	consumer *cluster.Consumer
 	messages chan Message
-	logger   *log.Logger
 }
 
 type kafkaConsumerMessageWrapper struct {
@@ -63,7 +62,7 @@ func (c *Client) getInitialOffset(offset string) int64 {
 	case "newest":
 		initialOffset = sarama.OffsetNewest
 	default:
-		c.logger.Fatalln("Offset should be `oldest` or `newest`")
+		log.Fatalln("Offset should be `oldest` or `newest`")
 	}
 	return initialOffset
 }
@@ -77,7 +76,7 @@ func (c *Client) initConsumer(offset string) *cluster.Config {
 	}
 	if err := clusterCfg.Validate(); err != nil {
 		msg := fmt.Sprintf("Kafka consumer config invalidate. config: %v. err: %v", *clusterCfg, err)
-		c.logger.Println(msg)
+		log.Println(msg)
 		panic(msg)
 	}
 	return clusterCfg
@@ -88,13 +87,12 @@ func (c *Client) NewConsumer(consumerId string, topics []string, offset string) 
 	consumer, err := cluster.NewConsumer(c.servers, consumerId, topics, clusterCfg)
 	if err != nil {
 		msg := fmt.Sprintf("Create kafka consumer error: %v. config: %v", err, clusterCfg)
-		c.logger.Println(msg)
+		log.Println(msg)
 		return nil, err
 	}
 	aliyun := &AliyunConsumer{
 		consumer: consumer,
 		messages: make(chan Message),
-		logger:   c.logger,
 	}
 
 	go aliyun.run()
@@ -114,11 +112,11 @@ func (consumer *AliyunConsumer) run() {
 			}
 		case notify, more := <-consumer.consumer.Notifications():
 			if more {
-				consumer.logger.Println("Kafka consumer rebalanced: %v", notify)
+				log.Println("Kafka consumer rebalanced: %v", notify)
 			}
 		case err, more := <-consumer.consumer.Errors():
 			if more {
-				consumer.logger.Printf("Errors: %s\n", err.Error())
+				log.Printf("Errors: %s\n", err.Error())
 			}
 		}
 	}

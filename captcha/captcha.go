@@ -40,6 +40,8 @@ func New(dsn, accessKey, secretKey, templateCode, signName string, debug bool) *
 	}
 }
 
+// c.SetCategroy("sms-code")
+
 func (c *Captcha) SmsSend(mobile string) (string, int, error) {
 	return c.GenerateAndSend(CategorySmsCode, mobile, Expiration, DefaultLen)
 }

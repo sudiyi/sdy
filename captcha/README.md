@@ -31,3 +31,11 @@ cap = captcha.New("redis://:password@localost:6379/10", "accessKey", "secretKey"
 cap.SmsSend("15****6956")
 ```
 
+
+### Future
+
+```
+cap = captcha.New("redis://:password@localost:6379/10", "accessKey", "secretKey", "SMS_******", "签名", false)
+cap.SetCategroy("sms-code") // your can give the default value
+cap.SmsSend("15****6956")
+```

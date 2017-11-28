@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Shopify/sarama"
 	"log"
+	"os"
 )
 
 const AliyunCertificate = `
@@ -35,15 +36,14 @@ type Client struct {
 	accessKey string
 	password  string
 	debug     bool
-	logger    *log.Logger
 }
 
-func New(servers []string, accessKey, password string, debug bool, logger *log.Logger) *Client {
+func New(servers []string, accessKey, password string, debug bool) *Client {
 	fmt.Println("init kafka client")
 	if debug {
-		sarama.Logger = logger
+		sarama.Logger = log.New(os.Stdout, "[sarama] ", log.LstdFlags)
 	}
-	return &Client{servers: servers, accessKey: accessKey, password: password, debug: debug, logger: logger}
+	return &Client{servers: servers, accessKey: accessKey, password: password}
 }
 
 func (c *Client) AppendValidateCertificate() *x509.CertPool {

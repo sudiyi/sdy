@@ -7,11 +7,15 @@ import (
 	"log"
 )
 
+const (
+	DefaultPartition int32 = 0
+	DefaultOffset    int64 = 0
+)
+
 type Producer struct {
 	topic         string
 	producer      sarama.SyncProducer
 	AsyncProducer sarama.AsyncProducer
-	logger        *log.Logger
 }
 
 func (c *Client) initConfigForProducer() *sarama.Config {
@@ -41,7 +45,7 @@ func (c *Client) initProducer() *sarama.Config {
 			"Kafka producer config invalidate. servers: %v. ak: %s, pwd: %s, err: %v",
 			c.servers, c.accessKey, c.password, err,
 		)
-		c.logger.Println(msg)
+		log.Println(msg)
 		panic(msg)
 	}
 	return mqConfig
@@ -52,10 +56,10 @@ func (c *Client) NewProducer(topic string) *Producer {
 	producer, err := sarama.NewSyncProducer(c.servers, mgConfig)
 	if err != nil {
 		msg := fmt.Sprintf("Kafak producer create fail. err: %v", err)
-		c.logger.Println(msg)
+		log.Println(msg)
 		panic(msg)
 	}
-	return &Producer{topic: topic, producer: producer, logger: c.logger}
+	return &Producer{topic: topic, producer: producer}
 }
 
 // sync producer, use for little concurrency
@@ -68,8 +72,8 @@ func (p *Producer) Produce(key string, content string) (partition int32, offset 
 	partition, offset, err = p.producer.SendMessage(msg)
 	if err != nil {
 		msg := fmt.Sprintf("Kafka send message error. topic: %v. key: %v. content: %v", p.topic, key, content)
-		p.logger.Println(msg)
-		return 0, 0, err
+		log.Println(msg)
+		return DefaultPartition, DefaultOffset, err
 	}
 	return partition, offset, nil
 }
@@ -80,10 +84,10 @@ func (c *Client) NewAsyncProducer(topic string) *Producer {
 	asyncProducer, err := sarama.NewAsyncProducer(c.servers, mgConfig)
 	if err != nil {
 		msg := fmt.Sprintf("Kafak async producer create fail. err: %v", err)
-		c.logger.Println(msg)
+		log.Println(msg)
 		panic(msg)
 	}
-	return &Producer{topic: topic, AsyncProducer: asyncProducer, logger: c.logger}
+	return &Producer{topic: topic, AsyncProducer: asyncProducer}
 }
 
 func (p *Producer) AsyncProduce(key string, content string) {
@@ -95,11 +99,11 @@ func (p *Producer) AsyncProduce(key string, content string) {
 			select {
 			case err, ok := <-errors:
 				if ok {
-					p.logger.Fatalln("FAILURE:", err)
+					log.Fatalln("FAILURE:", err)
 				}
 			case message, ok := <-success:
 				if ok {
-					p.logger.Printf(
+					log.Printf(
 						"Topic: %s, Key: %s, Partition: %d, Offset: %d \n", message.Topic,
 						message.Key, message.Partition, message.Offset,
 					)

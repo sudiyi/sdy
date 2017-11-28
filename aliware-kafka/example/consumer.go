@@ -18,7 +18,6 @@ var jsonConfigString = `
   "consumerId": "your consumer id",
 }
 `
-var newLogger = log.New(os.Stderr, "", log.LstdFlags)
 
 func main() {
 	results := gjson.GetMany(jsonConfigString, "servers", "ak", "password", "consumerId", "topics")
@@ -32,7 +31,7 @@ func main() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
-	client := kafka.New(s, ak, password, true, newLogger)
+	client := kafka.New(s, ak, password, true)
 	consumer, err := client.NewConsumer(consumerId, t, `oldest`)
 	if err != nil {
 		panic(err)
