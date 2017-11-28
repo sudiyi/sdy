@@ -87,24 +87,26 @@ func (c *Client) NewAsyncProducer(topic string) *Producer {
 }
 
 func (p *Producer) AsyncProduce(key string, content string) {
-	go func(pd sarama.AsyncProducer) {
-		errors := pd.Errors()
-		success := pd.Successes()
+	go func() {
+		errors := p.AsyncProducer.Errors()
+		success := p.AsyncProducer.Successes()
 
 		for {
 			select {
-			case err := <-errors:
-				if err != nil {
+			case err, ok := <-errors:
+				if ok {
 					p.logger.Fatalln("FAILURE:", err)
 				}
-			case message := <-success:
-				p.logger.Printf(
-					"Topic: %s, Key: %s, Partition: %d, Offset: %d \n", message.Topic,
-					message.Key, message.Partition, message.Offset,
-				)
+			case message, ok := <-success:
+				if ok {
+					p.logger.Printf(
+						"Topic: %s, Key: %s, Partition: %d, Offset: %d \n", message.Topic,
+						message.Key, message.Partition, message.Offset,
+					)
+				}
 			}
 		}
-	}(p.AsyncProducer)
+	}()
 
 	msg := &sarama.ProducerMessage{
 		Topic: p.topic,
