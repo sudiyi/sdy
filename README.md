@@ -4,7 +4,10 @@
     * include some basic method
 * redis
     * the package for [redigo](https://github.com/garyburd/redigo)
-    
+* captcha
+    * the sms captcha for aliware
+* aliware-kafka
+    * the common lib for aliware kafka        
 
 ## Usage
 
