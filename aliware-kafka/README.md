@@ -20,7 +20,7 @@ import(
     "github.com:huhongda/GoToolBox/aliware-kafka"
 )
 
-client := kafka.New(servers, accessKey, password, debug, logger)
+client := kafka.New(servers, accessKey, password, debug)
 producer := client.NewProducer(topic)
 producer.produce(key, content)
 ```
@@ -34,8 +34,7 @@ import(
     "log"
 )
 
-var logger = log.New(os.Stderr, "", log.LstdFlags)
-client := kafka.New(servers, accessKey, password, debug, logger)
+client := kafka.New(servers, accessKey, password, debug)
 producer := client.NewAsyncProducer(topic)
 producer.AsyncProduce(key, content)
 ```
@@ -47,12 +46,11 @@ import(
     "os"
     "os/signal"
 )
-var logger = log.New(os.Stderr, "", log.LstdFlags)
 
 signals := make(chan os.Signal, 1)
 signal.Notify(signals, os.Interrupt)
 
-client := kafka.New(servers, accessKey, password, debug, logger)
+client := kafka.New(servers, accessKey, password, debug)
 consumer, err := client.NewConsumer(consumerId, topics, offset)
 if err != nil {
     panic(err)
