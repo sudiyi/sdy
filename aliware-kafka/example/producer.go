@@ -34,7 +34,7 @@ func main() {
 
 func asyncProducer(s []string, ak, password string, topic string) {
 	client := kafka.New(s, ak, password, false)
-	p := client.NewAsyncProducer(topic)
+	p, _ := client.NewAsyncProducer(topic)
 	defer p.AsyncClose()
 
 	var i int
@@ -54,7 +54,7 @@ func asyncProducer(s []string, ak, password string, topic string) {
 
 func syncProducer(s []string, ak, password string, topic string) {
 	client := kafka.New(s, ak, password, false)
-	p := client.NewProducer(topic)
+	p, _ := client.NewProducer(topic)
 
 	var i int
 

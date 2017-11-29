@@ -31,7 +31,7 @@ func (c *Client) initConfigForProducer() *sarama.Config {
 	return mqConfig
 }
 
-func (c *Client) initProducer() *sarama.Config {
+func (c *Client) initProducer() (*sarama.Config, error) {
 	mqConfig := c.initConfigForProducer()
 
 	clientCertPool := c.AppendValidateCertificate()
@@ -40,26 +40,28 @@ func (c *Client) initProducer() *sarama.Config {
 		RootCAs:            clientCertPool,
 		InsecureSkipVerify: true,
 	}
-	if err := mqConfig.Validate(); err != nil {
+	err := mqConfig.Validate()
+	if err != nil {
 		msg := fmt.Sprintf(
 			"Kafka producer config invalidate. servers: %v. ak: %s, pwd: %s, err: %v",
 			c.servers, c.accessKey, c.password, err,
 		)
 		log.Println(msg)
-		panic(msg)
 	}
-	return mqConfig
+	return mqConfig, err
 }
 
-func (c *Client) NewProducer(topic string) *Producer {
-	mgConfig := c.initProducer()
+func (c *Client) NewProducer(topic string) (*Producer, error) {
+	mgConfig, err := c.initProducer()
+	if err != nil {
+		return nil, err
+	}
 	producer, err := sarama.NewSyncProducer(c.servers, mgConfig)
 	if err != nil {
 		msg := fmt.Sprintf("Kafak producer create fail. err: %v", err)
 		log.Println(msg)
-		panic(msg)
 	}
-	return &Producer{topic: topic, producer: producer}
+	return &Producer{topic: topic, producer: producer}, err
 }
 
 // sync producer, use for little concurrency
@@ -79,15 +81,17 @@ func (p *Producer) Produce(key string, content string) (partition int32, offset 
 }
 
 // async producer, use for many concurrency
-func (c *Client) NewAsyncProducer(topic string) *Producer {
-	mgConfig := c.initProducer()
+func (c *Client) NewAsyncProducer(topic string) (*Producer, error) {
+	mgConfig, err := c.initProducer()
+	if err != nil {
+		return nil, err
+	}
 	asyncProducer, err := sarama.NewAsyncProducer(c.servers, mgConfig)
 	if err != nil {
 		msg := fmt.Sprintf("Kafak async producer create fail. err: %v", err)
 		log.Println(msg)
-		panic(msg)
 	}
-	return &Producer{topic: topic, AsyncProducer: asyncProducer}
+	return &Producer{topic: topic, AsyncProducer: asyncProducer}, err
 }
 
 func (p *Producer) AsyncProduce(key string, content string) {

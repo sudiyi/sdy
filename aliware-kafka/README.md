@@ -21,7 +21,10 @@ import(
 )
 
 client := kafka.New(servers, accessKey, password, debug)
-producer := client.NewProducer(topic)
+producer, err := client.NewProducer(topic)
+if err != nil {
+    panic(err)
+}
 producer.produce(key, content)
 ```
 
@@ -35,7 +38,10 @@ import(
 )
 
 client := kafka.New(servers, accessKey, password, debug)
-producer := client.NewAsyncProducer(topic)
+producer, err := client.NewAsyncProducer(topic)
+if err != nil {
+    panic(err)
+}
 producer.AsyncProduce(key, content)
 ```
 
