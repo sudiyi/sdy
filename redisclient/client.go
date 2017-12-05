@@ -6,7 +6,6 @@ import (
   "log"
   "sync"
   "time"
-  "fmt"
 )
 
 var redisInstance *RedisClient = nil
