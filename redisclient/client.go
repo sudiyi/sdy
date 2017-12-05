@@ -6,6 +6,7 @@ import (
   "log"
   "sync"
   "time"
+  "fmt"
 )
 
 var redisInstance *RedisClient = nil
@@ -18,10 +19,11 @@ type RedisClient struct {
 const (
   Success int = 1 // 成功
 
+  DefaultRedisDb int  = 0
+
   DefaultMaxIdle     int           = 3                 // 空闲连接的最大数目
   DefaultMaxActive   int           = 1000              // 给定时间内最大连接数，为0则连接数没有限制
   DefaultMaxWaitTime time.Duration = 180 * time.Second // Redis最大等待时间
-  DefaultTimeout     int           = 3                 // 默认链接等待时间
 )
 
 // The Redis client connection
@@ -41,47 +43,51 @@ func NewRedisClientOnce(dsn string) *RedisClient {
 }
 
 func NewDefaultPool(dsn string) *redis.Pool {
-  return NewPool(dsn, DefaultMaxIdle, DefaultMaxActive, DefaultTimeout)
+  return NewPool(dsn, DefaultMaxIdle, DefaultMaxActive)
 }
 
-func NewPool(dsn string, maxIdle, maxActive, timeout int) *redis.Pool {
-  server, password, db := dsnParse(dsn)
+func NewPool(dsn string, maxIdle, maxActive int) *redis.Pool {
+  server, password, db := DsnParse(dsn)
   return &redis.Pool{
     MaxIdle:     maxIdle,            // default: 3
     MaxActive:   maxActive,          // default: 1000
     IdleTimeout: DefaultMaxWaitTime, // default 3 * 60 seconds
     Dial: func() (redis.Conn, error) {
-      c, err := redis.Dial("tcp", server)
+      c, err := validateServer(server, password, db)
       if err != nil {
-        log.Println("failed to connect:", err)
         return nil, err
-      }
-      if password != "" {
-        if _, err := c.Do("AUTH", password); err != nil {
-          log.Println("password auth fail", err)
-          c.Close()
-          return nil, err
-        }
-      }
-      if db != 0 {
-        if _, err := c.Do("SELECT", db); err != nil {
-          c.Close()
-          log.Println("select db fail", err)
-          return nil, err
-        }
       }
       log.Println("new redis pool success!")
       return c, err
     },
     TestOnBorrow: func(c redis.Conn, t time.Time) error {
-      if time.Since(t).Seconds() > float64(timeout) {
-        log.Println("connecting timeout")
-        return nil
-      }
       _, err := c.Do("PING")
       return err
     },
   }
+}
+
+func validateServer(server, password string, db int) (redis.Conn, error) {
+  c, err := redis.Dial("tcp", server)
+  if err != nil {
+    log.Println("failed to connect:", err)
+    return nil, err
+  }
+  if password != "" {
+    if _, err := c.Do("AUTH", password); err != nil {
+      log.Println("password auth fail", err)
+      c.Close()
+      return nil, err
+    }
+  }
+  if db != DefaultRedisDb {
+    if _, err := c.Do("SELECT", db); err != nil {
+      c.Close()
+      log.Println("select db fail", err)
+      return nil, err
+    }
+  }
+  return c, err
 }
 
 func (client *RedisClient) GetConnection() (conn redis.Conn) {

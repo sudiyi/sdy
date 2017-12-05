@@ -10,7 +10,7 @@ import (
 // parse: redis://[:password@]host[:port][/db-number][?option=value]
 // eg:    redis://localhost:6379/10
 //		  redis://:password@localhost:6379/0
-func dsnParse(dns string) (string, string, int) {
+func DsnParse(dns string) (string, string, int) {
 	password := ""
 	db := 0
 	u, err := url.Parse(dns)
