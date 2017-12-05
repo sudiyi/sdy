@@ -1,4 +1,4 @@
-package: github.com/huhongda/GoToolBox/aliware-kafka
+package: github.com/sudiyi/sdy/aliware-kafka
 import:
 - package: github.com/Shopify/sarama
   version: ^1.14.0
@@ -7,3 +7,6 @@ import:
 - package: github.com/tidwall/gjson
   version: ^1.0.2
 - package: github.com/tidwall/match
+- package: github.com/sudiyi/sdy
+  subpackages:
+  - aliware-kafka

@@ -3,11 +3,11 @@
 ## Usage
 
 ```
-go get github.com/huhongda/GoToolBox/redis
+go get github.com/sudiyi/sdy/redis
 
 or 
 
-glide get github.com/huhongda/GoToolBox/redis
+glide get github.com/sudiyi/sdy/redis
 ```
 
 ```

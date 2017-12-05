@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/huhongda/GoToolBox/aliware-kafka"
+	"github.com/sudiyi/sdy/aliware-kafka"
 	"github.com/tidwall/gjson"
-	"log"
-	"os"
 )
 
 var jsonString = `

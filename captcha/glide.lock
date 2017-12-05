@@ -12,7 +12,7 @@ imports:
   - sms
 - name: github.com/GiterLab/urllib
   version: ea0e875f90303d1469067f22ccda69f903380a87
-- name: github.com/huhongda/GoToolBox
+- name: github.com/sudiyi/sdy
   version: b27715dc8ca1bb6fd5029748232b7619912879ad
   subpackages:
   - captcha

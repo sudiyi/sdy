@@ -6,7 +6,7 @@ imports:
   subpackages:
   - internal
   - redis
-- name: github.com/huhongda/GoToolBox
+- name: github.com/sudiyi/sdy
   version: f37c7b6f133bb85b12eff19f2813e4eae7654961
   subpackages:
   - utils

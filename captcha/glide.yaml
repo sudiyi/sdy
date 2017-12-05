@@ -3,7 +3,7 @@ import:
 - package: github.com/GiterLab/aliyun-sms-go-sdk
   subpackages:
   - sms
-- package: github.com/huhongda/GoToolBox
+- package: github.com/sudiyi/sdy
   subpackages:
   - redisclient
   - smscaptcha

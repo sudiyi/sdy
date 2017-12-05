@@ -13,9 +13,9 @@
 ## Usage
 
 ```
-go get github.com/huhongda/GoToolBox
+go get github.com/sudiyi/sdy
 
 or 
 
-glide get github.com/huhongda/GoToolBox
+glide get github.com/sudiyi/sdy
 ```
