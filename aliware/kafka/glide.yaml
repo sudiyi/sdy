@@ -9,4 +9,4 @@ import:
 - package: github.com/tidwall/match
 - package: github.com/sudiyi/sdy
   subpackages:
-  - aliware-kafka
+  - aliware/kafka

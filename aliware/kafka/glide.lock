@@ -1,5 +1,5 @@
-hash: 90bdd12465f820e221f2119dd8392ef7af54b46e48347e52090d614c39899d33
-updated: 2017-12-05T21:58:55.620524+08:00
+hash: 6df74d2a6154345b6efa44e7e6c803655fccaf91ade2e4b7b9fe720c332c9f05
+updated: 2017-12-07T14:21:23.946544+08:00
 imports:
 - name: github.com/bsm/sarama-cluster
   version: abf039439f66c1ce78017f560b490612552f6472
@@ -24,13 +24,13 @@ imports:
   subpackages:
   - xxHash32
 - name: github.com/rcrowley/go-metrics
-  version: 1f30fe9094a513ce4c700b9a54458bbb0c96996c
+  version: e181e095bae94582363434144c61a9653aff6e50
 - name: github.com/Shopify/sarama
   version: 240fd146ce68bcafb034cc5dc977229ffbafa8ea
 - name: github.com/sudiyi/sdy
-  version: 5b33d544033ecb3391269d55ce9e289eade26a8c
+  version: 8c29210c684b291fe25d645f51da117437954ffd
   subpackages:
-  - aliware-kafka
+  - aliware/kafka
 - name: github.com/tidwall/gjson
   version: 182ad7605048a24cd37115b7157b8a4436d9ea17
 - name: github.com/tidwall/match
