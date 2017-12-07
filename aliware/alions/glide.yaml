@@ -1,0 +1,7 @@
+package: sdy/aliware/alions
+import:
+- package: github.com/go-resty/resty
+  version: ^1.0.0
+- package: github.com/sudiyi/sdy
+  subpackages:
+  - utils

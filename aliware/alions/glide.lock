@@ -1,0 +1,14 @@
+hash: c425796942e8204a24349817d059e138322b4baee831c3550e9ad0bb75f50fc3
+updated: 2017-12-07T14:30:04.605599+08:00
+imports:
+- name: github.com/go-resty/resty
+  version: 9ac9c42358f7c3c69ac9f8610e8790d7c338e85d
+- name: github.com/sudiyi/sdy
+  version: b27715dc8ca1bb6fd5029748232b7619912879ad
+  subpackages:
+  - utils
+- name: golang.org/x/net
+  version: a8b9294777976932365dabb6640cf1468d95c70f
+  subpackages:
+  - publicsuffix
+testImports: []
