@@ -1,0 +1,4 @@
+package: sdy/gin/middleware/rails_logger
+import:
+- package: github.com/gin-gonic/gin
+  version: ^1.2.0

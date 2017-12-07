@@ -1,0 +1,7 @@
+package: sdy/gin/middleware/recovery
+import:
+- package: github.com/gin-gonic/gin
+  version: ^1.2.0
+- package: github.com/sudiyi/sdy
+  subpackages:
+  - gin/logger_duo

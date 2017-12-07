@@ -6,3 +6,4 @@ captcha/vendor
 aliware-kafka/vendor
 
 aliware/**/vendor
+gin/**/vendor
