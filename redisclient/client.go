@@ -26,27 +26,36 @@ const (
 )
 
 // The Redis client connection
-func NewRedisClient(dsn string) *RedisClient {
-  return &RedisClient{
-    pool: NewDefaultPool(dsn),
+func NewRedisClient(dsn string) (*RedisClient, error) {
+  pool, err := NewDefaultPool(dsn)
+  if err != nil {
+    return nil, err
   }
+  return &RedisClient{pool: pool}, nil
 }
 
-func NewRedisClientOnce(dsn string) *RedisClient {
+func NewRedisClientOnce(dsn string) (*RedisClient, error) {
+  var error error
   redisOnce.Do(func() {
-    redisInstance = &RedisClient{
-      pool: NewDefaultPool(dsn),
+    pool, err := NewDefaultPool(dsn)
+    if err != nil {
+      error = err
+    } else {
+      redisInstance = &RedisClient{pool: pool}
     }
   })
-  return redisInstance
+  return redisInstance, error
 }
 
-func NewDefaultPool(dsn string) *redis.Pool {
+func NewDefaultPool(dsn string) (*redis.Pool, error) {
   return NewPool(dsn, DefaultMaxIdle, DefaultMaxActive)
 }
 
-func NewPool(dsn string, maxIdle, maxActive int) *redis.Pool {
-  server, password, db := DsnParse(dsn)
+func NewPool(dsn string, maxIdle, maxActive int) (*redis.Pool, error) {
+  server, password, db, err := DsnParse(dsn)
+  if err != nil {
+    return nil, err
+  }
   return &redis.Pool{
     MaxIdle:     maxIdle,            // default: 3
     MaxActive:   maxActive,          // default: 1000
@@ -63,7 +72,7 @@ func NewPool(dsn string, maxIdle, maxActive int) *redis.Pool {
       _, err := c.Do("PING")
       return err
     },
-  }
+  }, nil
 }
 
 func validateServer(server, password string, db int) (redis.Conn, error) {

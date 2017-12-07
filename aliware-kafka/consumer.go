@@ -67,9 +67,12 @@ func (c *Client) getInitialOffset(offset string) int64 {
 	return initialOffset
 }
 
-func (c *Client) initConsumer(offset string) *cluster.Config {
+func (c *Client) initConsumer(offset string) (*cluster.Config, error) {
 	clusterCfg := c.initConfigForConsumer(offset)
-	clientCertPool := c.AppendValidateCertificate()
+	clientCertPool, err := c.AppendValidateCertificate()
+	if err != nil {
+		return nil, err
+	}
 	clusterCfg.Net.TLS.Config = &tls.Config{
 		RootCAs:            clientCertPool,
 		InsecureSkipVerify: true,
@@ -79,25 +82,28 @@ func (c *Client) initConsumer(offset string) *cluster.Config {
 		log.Println(msg)
 		panic(msg)
 	}
-	return clusterCfg
+	return clusterCfg, nil
 }
 
 func (c *Client) NewConsumer(consumerId string, topics []string, offset string) (*AliyunConsumer, error) {
-	clusterCfg := c.initConsumer(offset)
+	clusterCfg, err := c.initConsumer(offset)
+	if err != nil {
+		return nil, err
+	}
 	consumer, err := cluster.NewConsumer(c.servers, consumerId, topics, clusterCfg)
 	if err != nil {
 		msg := fmt.Sprintf("Create kafka consumer error: %v. config: %v", err, clusterCfg)
 		log.Println(msg)
 		return nil, err
 	}
-	aliyun := &AliyunConsumer{
+	aliYun := &AliyunConsumer{
 		consumer: consumer,
 		messages: make(chan Message),
 	}
 
-	go aliyun.run()
+	go aliYun.run()
 
-	return aliyun, nil
+	return aliYun, nil
 }
 
 func (consumer *AliyunConsumer) run() {

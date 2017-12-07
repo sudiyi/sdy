@@ -34,13 +34,15 @@ func (c *Client) initConfigForProducer() *sarama.Config {
 func (c *Client) initProducer() (*sarama.Config, error) {
 	mqConfig := c.initConfigForProducer()
 
-	clientCertPool := c.AppendValidateCertificate()
-
+	clientCertPool, err := c.AppendValidateCertificate()
+	if err != nil {
+		return nil, err
+	}
 	mqConfig.Net.TLS.Config = &tls.Config{
 		RootCAs:            clientCertPool,
 		InsecureSkipVerify: true,
 	}
-	err := mqConfig.Validate()
+	err = mqConfig.Validate()
 	if err != nil {
 		msg := fmt.Sprintf(
 			"Kafka producer config invalidate. servers: %v. ak: %s, pwd: %s, err: %v",

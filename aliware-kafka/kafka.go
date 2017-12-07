@@ -6,6 +6,7 @@ import (
 	"github.com/Shopify/sarama"
 	"log"
 	"os"
+	"errors"
 )
 
 const AliyunCertificate = `
@@ -46,11 +47,11 @@ func New(servers []string, accessKey, password string, debug bool) *Client {
 	return &Client{servers: servers, accessKey: accessKey, password: password}
 }
 
-func (c *Client) AppendValidateCertificate() *x509.CertPool {
+func (c *Client) AppendValidateCertificate() (*x509.CertPool, error) {
 	clientCertPool := x509.NewCertPool()
 	ok := clientCertPool.AppendCertsFromPEM([]byte(AliyunCertificate))
 	if !ok {
-		panic("kafka producer failed to parse root certificate")
+		return nil, errors.New("kafka producer failed to parse root certificate")
 	}
-	return clientCertPool
+	return clientCertPool, nil
 }
