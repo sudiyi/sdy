@@ -1,0 +1,6 @@
+package: sdy/gin/registrar
+import:
+- package: github.com/gin-contrib/pprof
+  version: ^1.1.0
+- package: github.com/gin-gonic/gin
+  version: ^1.2.0
