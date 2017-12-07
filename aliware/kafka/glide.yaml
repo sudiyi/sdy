@@ -1,0 +1,12 @@
+package: github.com/sudiyi/sdy/aliware-kafka
+import:
+- package: github.com/Shopify/sarama
+  version: ^1.14.0
+- package: github.com/bsm/sarama-cluster
+  version: ^2.1.10
+- package: github.com/tidwall/gjson
+  version: ^1.0.2
+- package: github.com/tidwall/match
+- package: github.com/sudiyi/sdy
+  subpackages:
+  - aliware-kafka

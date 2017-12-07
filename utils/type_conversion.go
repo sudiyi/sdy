@@ -66,7 +66,7 @@ func InterfaceToString(value interface{}) (string, error) {
 	}
 }
 
-func StructToMap(in interface{}, tag string) (map[string]interface{}, error) {
+func InterfaceToMap(in interface{}, tag string) (map[string]interface{}, error) {
 	out := make(map[string]interface{})
 
 	v := reflect.ValueOf(in)
