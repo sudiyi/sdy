@@ -1,0 +1,4 @@
+package: sdy/gin/gorm_util
+import:
+- package: github.com/jinzhu/gorm
+  version: ^1.0.0
