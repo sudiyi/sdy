@@ -4,3 +4,5 @@ utils/vendor
 redisclient/vendor
 captcha/vendor
 aliware-kafka/vendor
+
+aliware/**/vendor

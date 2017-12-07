@@ -1,9 +1,0 @@
-package: GoToolBox/smscaptcha
-import:
-- package: github.com/GiterLab/aliyun-sms-go-sdk
-  subpackages:
-  - sms
-- package: github.com/huhongda/GoToolBox
-  subpackages:
-  - redisclient
-  - smscaptcha
