@@ -1,7 +1,6 @@
-package redisclient
+package utils
 
 import (
-	"github.com/sudiyi/sdy/utils"
 	"net/url"
 	"strings"
 )
@@ -10,12 +9,14 @@ import (
 // parse: redis://[:password@]host[:port][/db-number][?option=value]
 // eg:    redis://localhost:6379/10
 //		  redis://:password@localhost:6379/0
-func DsnParse(dns string) (string, string, int, error) {
+
+// parse: mysql://[username:password@]host[:port]/db-number
+func DsnParse(dns string) (string, string, string, error) {
 	password := ""
-	db := 0
+	db := ""
 	u, err := url.Parse(dns)
 	if err != nil {
-		return "", "", 0, err
+		return "", "", "", err
 	}
 	if u.User != nil {
 		p, _ := u.User.Password()
@@ -23,7 +24,7 @@ func DsnParse(dns string) (string, string, int, error) {
 	}
 	if u.Path != "" {
 		arr := strings.Split(u.Path, "/")
-		db = utils.StringToInt(arr[1])
+		db = arr[1]
 	}
 	return u.Host, password, db, nil
 }
