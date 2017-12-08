@@ -5,8 +5,8 @@ import (
 	"github.com/TingYunAPM/go"
 	"github.com/TingYunAPM/go/framework/gin"
 	"github.com/gin-gonic/gin"
+	"github.com/sudiyi/sdy/utils"
 	"reflect"
-	"sdy/utils"
 )
 
 type TingYunService struct {
