@@ -1,0 +1,6 @@
+package: sdy/tingyun
+import:
+- package: github.com/TingYunAPM/go
+- package: github.com/sudiyi/sdy
+  subpackages:
+  - redis

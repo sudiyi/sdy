@@ -1,9 +1,3 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
-utils/vendor
-redisclient/vendor
-captcha/vendor
-aliware-kafka/vendor
-
-aliware/**/vendor
-gin/**/vendor
+**/**/vendor
