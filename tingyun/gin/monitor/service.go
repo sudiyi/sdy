@@ -10,8 +10,8 @@ import (
 )
 
 type TingYunService struct {
-	action    *tingyun.Action
-	component *tingyun.Component
+	Action    *tingyun.Action
+	Component *tingyun.Component
 }
 
 // use for main init method: monitor.AppInit()
@@ -39,16 +39,16 @@ func GinDefault() *tingyun_gin.WrapEngine {
 func New(handleName string, c *gin.Context) *TingYunService {
 	action := tingyun_gin.FindAction(c)
 	component := action.CreateComponent(handleName)
-	return &TingYunService{action: action, component: component}
+	return &TingYunService{Action: action, Component: component}
 }
 
 func (t *TingYunService) EnableRedis(dsn string) *tingyun.Component {
 	host, _, db, _ := utils.DsnParse(dsn)
-	return t.action.CreateDBComponent(tingyun.ComponentRedis, host, db, "", "get/set/de", "redis.Do")
+	return t.Action.CreateDBComponent(tingyun.ComponentRedis, host, db, "", "get/set/de", "redis.Do")
 }
 
 func (t *TingYunService) WrapperRun(m map[string]interface{}, name string, params ...interface{}) (result []reflect.Value, err error) {
-	subComponent := t.component.CreateComponent(name)
+	subComponent := t.Component.CreateComponent(name)
 	defer subComponent.Finish()
 
 	f := reflect.ValueOf(m[name])
