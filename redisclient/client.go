@@ -54,7 +54,7 @@ func NewDefaultPool(dsn string) (*redis.Pool, error) {
 
 func NewPool(dsn string, maxIdle, maxActive int) (*redis.Pool, error) {
 	server, password, db, err := utils.DsnParse(dsn)
-	db = utils.StringToInt(db)
+	database := utils.StringToInt(db)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func NewPool(dsn string, maxIdle, maxActive int) (*redis.Pool, error) {
 		MaxActive:   maxActive,          // default: 1000
 		IdleTimeout: DefaultMaxWaitTime, // default 3 * 60 seconds
 		Dial: func() (redis.Conn, error) {
-			c, err := validateServer(server, password, db)
+			c, err := validateServer(server, password, database)
 			if err != nil {
 				return nil, err
 			}
