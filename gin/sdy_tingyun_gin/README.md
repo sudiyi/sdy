@@ -24,7 +24,7 @@ func ServeA(action sdy_tingyun_gin.Action, component *tingyun.Component, a int, 
 	action.Run("sub", component, ServeB, a, 2, out)
 }
 
-func ServeB(action sdy_tingyun_gin.Action, parent *tingyun.Component, a, b int, out gin.H) {
+func ServeB(action sdy_tingyun_gin.Action, component *tingyun.Component, a, b int, out gin.H) {
 	out["sum"] = a + b
 }
 ```

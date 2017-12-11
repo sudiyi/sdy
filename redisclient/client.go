@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	tingyun "github.com/TingYunAPM/go"
 	"github.com/garyburd/redigo/redis"
 	"github.com/sudiyi/sdy/utils"
 )
@@ -38,18 +37,6 @@ func NewRedisClient(dsn string) (*RedisClient, error) {
 		return nil, err
 	}
 	return redisClient, nil
-}
-
-func NewRedisClientOnce(dsn string) (*RedisClient, error) {
-	var err error
-	redisOnce.Do(func() {
-		redisInstance = &RedisClient{}
-		err = redisInstance.InitDefaultPool(dsn)
-	})
-	if nil != err {
-		return nil, err
-	}
-	return redisInstance, nil
 }
 
 func (client *RedisClient) InitDefaultPool(dsn string) error {
@@ -124,12 +111,6 @@ func (client *RedisClient) Do(cmd string, args ...interface{}) (reply interface{
 	conn := client.GetConnection()
 	defer client.ReturnConn(conn)
 	return conn.Do(cmd, args...)
-}
-
-func (client *RedisClient) TingyunDo(action *tingyun.Action, name string, cmd string, args ...interface{}) (reply interface{}, err error) {
-	component := action.CreateDBComponent(tingyun.ComponentRedis, client.server, client.db, "", cmd, name)
-	defer component.Finish()
-	return client.Do(cmd, args...)
 }
 
 func (client *RedisClient) Get(key string) (string, error) {
