@@ -2,18 +2,23 @@ package redisclient
 
 import (
 	"errors"
-	"github.com/garyburd/redigo/redis"
-	"github.com/sudiyi/sdy/utils"
+
 	"log"
 	"sync"
 	"time"
+
+	tingyun "github.com/TingYunAPM/go"
+	"github.com/garyburd/redigo/redis"
+	"github.com/sudiyi/sdy/utils"
 )
 
-var redisInstance *RedisClient = nil
+var redisInstance *RedisClient
 var redisOnce sync.Once
 
 type RedisClient struct {
-	pool *redis.Pool
+	pool   *redis.Pool
+	server string
+	db     string
 }
 
 const (
@@ -28,42 +33,43 @@ const (
 
 // The Redis client connection
 func NewRedisClient(dsn string) (*RedisClient, error) {
-	pool, err := NewDefaultPool(dsn)
-	if err != nil {
+	redisClient := &RedisClient{}
+	if err := redisClient.InitDefaultPool(dsn); nil != err {
 		return nil, err
 	}
-	return &RedisClient{pool: pool}, nil
+	return redisClient, nil
 }
 
 func NewRedisClientOnce(dsn string) (*RedisClient, error) {
-	var error error
+	var err error
 	redisOnce.Do(func() {
-		pool, err := NewDefaultPool(dsn)
-		if err != nil {
-			error = err
-		} else {
-			redisInstance = &RedisClient{pool: pool}
-		}
+		redisInstance = &RedisClient{}
+		err = redisInstance.InitDefaultPool(dsn)
 	})
-	return redisInstance, error
-}
-
-func NewDefaultPool(dsn string) (*redis.Pool, error) {
-	return NewPool(dsn, DefaultMaxIdle, DefaultMaxActive)
-}
-
-func NewPool(dsn string, maxIdle, maxActive int) (*redis.Pool, error) {
-	server, password, db, err := utils.DsnParse(dsn)
-	database := utils.StringToInt(db)
-	if err != nil {
+	if nil != err {
 		return nil, err
 	}
-	return &redis.Pool{
+	return redisInstance, nil
+}
+
+func (client *RedisClient) InitDefaultPool(dsn string) error {
+	return client.InitPool(dsn, DefaultMaxIdle, DefaultMaxActive)
+}
+
+func (client *RedisClient) InitPool(dsn string, maxIdle, maxActive int) error {
+	server, password, db, err := utils.DsnParse(dsn)
+	if err != nil {
+		return err
+	}
+	client.server = server
+	client.db = db
+
+	client.pool = &redis.Pool{
 		MaxIdle:     maxIdle,            // default: 3
 		MaxActive:   maxActive,          // default: 1000
 		IdleTimeout: DefaultMaxWaitTime, // default 3 * 60 seconds
 		Dial: func() (redis.Conn, error) {
-			c, err := validateServer(server, password, database)
+			c, err := validateServer(server, password, utils.StringToInt(db))
 			if err != nil {
 				return nil, err
 			}
@@ -74,7 +80,8 @@ func NewPool(dsn string, maxIdle, maxActive int) (*redis.Pool, error) {
 			_, err := c.Do("PING")
 			return err
 		},
-	}, nil
+	}
+	return nil
 }
 
 func validateServer(server, password string, db int) (redis.Conn, error) {
@@ -117,6 +124,12 @@ func (client *RedisClient) Do(cmd string, args ...interface{}) (reply interface{
 	conn := client.GetConnection()
 	defer client.ReturnConn(conn)
 	return conn.Do(cmd, args...)
+}
+
+func (client *RedisClient) TingyunDo(action *tingyun.Action, name string, cmd string, args ...interface{}) (reply interface{}, err error) {
+	component := action.CreateDBComponent(tingyun.ComponentRedis, client.server, client.db, "", cmd, name)
+	defer component.Finish()
+	return client.Do(cmd, args...)
 }
 
 func (client *RedisClient) Get(key string) (string, error) {

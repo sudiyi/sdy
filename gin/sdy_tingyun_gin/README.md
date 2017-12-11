@@ -20,11 +20,11 @@ func Fun(c *gin.Context) {
 // The 1st argument must be an action that you created in handler.
 // The 2nd argument must be a component of the caller of this function.
 // And the rest are the arguments you passed in action.Run
-func ServeA(action sdy_tingyun_gin.IAction, component *tingyun.Component, a int, out gin.H) {
+func ServeA(action sdy_tingyun_gin.Action, component *tingyun.Component, a int, out gin.H) {
 	action.Run("sub", component, ServeB, a, 2, out)
 }
 
-func ServeB(action sdy_tingyun_gin.IAction, parent *tingyun.Component, a, b int, out gin.H) {
+func ServeB(action sdy_tingyun_gin.Action, parent *tingyun.Component, a, b int, out gin.H) {
 	out["sum"] = a + b
 }
 ```

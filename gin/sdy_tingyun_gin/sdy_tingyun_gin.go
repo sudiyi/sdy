@@ -8,15 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type IAction interface {
-	Run(name string, parent *tingyun.Component, f interface{}, args ...interface{})
-}
-
 type Action struct {
-	action *tingyun.Action
+	*tingyun.Action
 }
 
-func NewAction(c *gin.Context) IAction {
+func NewAction(c *gin.Context) *Action {
 	return &Action{tingyun_gin.FindAction(c)}
 }
 
@@ -38,7 +34,7 @@ func (a *Action) Run(name string, parent *tingyun.Component, f interface{}, args
 	if nil != parent {
 		component = parent.CreateComponent(name)
 	} else {
-		component = a.action.CreateComponent(name)
+		component = a.CreateComponent(name)
 	}
 	defer component.Finish()
 
