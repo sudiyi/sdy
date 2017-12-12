@@ -1,7 +1,9 @@
 package gorm_util
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 type Hitable interface {
@@ -13,6 +15,18 @@ type GormCtx struct {
 	Hitable Hitable
 }
 
+func New(dsn string) (*GormCtx, error) {
+	g := &GormCtx{}
+	var err error
+	if g.Db, err = gorm.Open("mysql", dsn); nil != err {
+		return nil, err
+	}
+	g.Db.DB().SetMaxIdleConns(10)
+	g.Db.DB().SetMaxOpenConns(100)
+	g.Db.LogMode("release" != gin.Mode())
+	return g, nil
+}
+
 func (g *GormCtx) New() *gorm.DB {
 	return g.Db.New()
 }
@@ -21,7 +35,9 @@ func (g *GormCtx) New() *gorm.DB {
 
 func (g *GormCtx) outOrPanic(out *gorm.DB) *gorm.DB {
 	if nil != out.Error {
-		g.Hitable.Hit()
+		if nil != g.Hitable {
+			g.Hitable.Hit()
+		}
 		panic(out.Error)
 	}
 	return out
@@ -29,7 +45,9 @@ func (g *GormCtx) outOrPanic(out *gorm.DB) *gorm.DB {
 
 func (g *GormCtx) outOrNotfoundOrPanic(out *gorm.DB) *gorm.DB {
 	if (nil != out.Error) && !out.RecordNotFound() {
-		g.Hitable.Hit()
+		if nil != g.Hitable {
+			g.Hitable.Hit()
+		}
 		panic(out.Error)
 	}
 	return out
