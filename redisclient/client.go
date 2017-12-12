@@ -11,15 +11,6 @@ import (
 	"github.com/sudiyi/sdy/utils"
 )
 
-var redisInstance *RedisClient
-var redisOnce sync.Once
-
-type RedisClient struct {
-	pool   *redis.Pool
-	server string
-	db     string
-}
-
 const (
 	Success int = 1 // 成功
 
@@ -30,6 +21,15 @@ const (
 	DefaultMaxWaitTime time.Duration = 180 * time.Second // Redis最大等待时间
 )
 
+type RedisClient struct {
+	pool   *redis.Pool
+	server string
+	db     string
+}
+
+var redisInstance *RedisClient
+var redisOnce sync.Once
+
 // The Redis client connection
 func NewRedisClient(dsn string) (*RedisClient, error) {
 	redisClient := &RedisClient{}
@@ -37,6 +37,14 @@ func NewRedisClient(dsn string) (*RedisClient, error) {
 		return nil, err
 	}
 	return redisClient, nil
+}
+
+func (client *RedisClient) GetServer() string {
+	return client.server
+}
+
+func (client *RedisClient) GetDb() string {
+	return client.db
 }
 
 func (client *RedisClient) InitDefaultPool(dsn string) error {
