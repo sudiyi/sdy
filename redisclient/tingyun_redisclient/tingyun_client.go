@@ -5,21 +5,10 @@ import (
 	"github.com/sudiyi/sdy/redisclient"
 )
 
-type Client struct {
-	*redisclient.RedisClient
-}
-
-func NewClient(dsn string) (*Client, error) {
-	c := &Client{}
-	var err error
-	if c.RedisClient, err = redisclient.NewRedisClient(dsn); nil != err {
-		return nil, err
+func TingAndDo(action *tingyun.Action, name string, red *redisclient.RedisClient) func(string, ...interface{}) (interface{}, error) {
+	return func(cmd string, args ...interface{}) (interface{}, error) {
+		component := action.CreateDBComponent(tingyun.ComponentRedis, red.GetServer(), red.GetDb(), "", cmd, name)
+		defer component.Finish()
+		return red.Do(cmd, args...)
 	}
-	return c, nil
-}
-
-func (c *Client) Do(action *tingyun.Action, name string, cmd string, args ...interface{}) (reply interface{}, err error) {
-	component := action.CreateDBComponent(tingyun.ComponentRedis, c.GetServer(), c.GetDb(), "", cmd, name)
-	defer component.Finish()
-	return c.RedisClient.Do(cmd, args...)
 }
