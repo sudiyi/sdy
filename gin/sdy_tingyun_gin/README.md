@@ -47,7 +47,7 @@ func init() {
 }
 
 // Your service
-func ServeA(action *sdy_tingyun_gin.Action, component *tingyun.Component, a int, out gin.H) {
+func ServeA(action *sdy_tingyun_gin.Action, component *tingyun.Component) {
 	db := g.NewDb(action.Action, "your operation name")
 	// Now you get a *gorm.DB, use it as usual!
 	db.Model(user).UpdateColumn("mobile", "123")
