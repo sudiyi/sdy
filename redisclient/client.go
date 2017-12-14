@@ -27,9 +27,6 @@ type RedisClient struct {
 	db     string
 }
 
-var redisInstance *RedisClient
-var redisOnce sync.Once
-
 // The Redis client connection
 func NewRedisClient(dsn string) (*RedisClient, error) {
 	redisClient := &RedisClient{}

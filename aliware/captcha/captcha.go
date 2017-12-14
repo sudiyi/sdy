@@ -31,8 +31,9 @@ type Captcha struct {
 }
 
 func New(dsn, accessKey, secretKey, templateCode, signName string, debug bool) *Captcha {
+	store, _ := redisclient.NewRedisClient(dsn)
 	return &Captcha{
-		store:        redisclient.NewRedisClient(dsn),
+		store:        store,
 		accessKey:    accessKey,
 		secretKey:    secretKey,
 		templateCode: templateCode,
