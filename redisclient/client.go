@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"log"
-	"sync"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
