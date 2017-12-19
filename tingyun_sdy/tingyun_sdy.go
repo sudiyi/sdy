@@ -1,19 +1,13 @@
-package sdy_tingyun_gin
+package tingyun_sdy
 
 import (
 	"reflect"
 
 	tingyun "github.com/TingYunAPM/go"
-	tingyun_gin "github.com/TingYunAPM/go/framework/gin"
-	"github.com/gin-gonic/gin"
 )
 
 type Action struct {
 	*tingyun.Action
-}
-
-func NewAction(c *gin.Context) *Action {
-	return &Action{tingyun_gin.FindAction(c)}
 }
 
 const argsBeginIndex = 2

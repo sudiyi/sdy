@@ -1,10 +1,8 @@
-package sdy_tingyun_gin
+package tingyun_gorm
 
 import (
 	tingyun "github.com/TingYunAPM/go"
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/sudiyi/sdy/utils"
 )
 
@@ -26,10 +24,6 @@ func NewGorm(dsn string) (*Gorm, error) {
 		return nil, err
 	}
 	g.DbRoot = db
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
-	db.LogMode("release" != gin.Mode())
-
 	g.registerTingyun()
 	return g, nil
 }

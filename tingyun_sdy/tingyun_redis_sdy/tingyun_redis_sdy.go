@@ -1,4 +1,4 @@
-package tingyun_redisclient
+package tingyun_redis_sdy
 
 import (
 	tingyun "github.com/TingYunAPM/go"
