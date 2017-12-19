@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/sudiyi/sdy/captcha"
+	"github.com/sudiyi/sdy/aliware/captcha"
 )
 
 func main() {

@@ -10,11 +10,11 @@ Golang sms captcha, special for aliYun sms
 ## Usage
 
 ```
-go get github.com/huhongda/sms-captcha
+go get github.com/sudiyi/sdy/aliware/captcha
 
 or 
 
-glide get github.com/huhongda/sms-captcha
+glide get github.com/sudiyi/sdy/aliware/captcha
 ```
 
 ```
@@ -24,7 +24,7 @@ redis_dsn = "redis://:password@localost:6379/10"
 
 ```
 import (
-    captcha "github.com/huhongda/sms-captcha"
+    captcha "github.com/sudiyi/sdy/aliware/captcha"
 ) 
 
 cap = captcha.New("redis://:password@localost:6379/10", "accessKey", "secretKey", "SMS_******", "签名", false)
@@ -36,6 +36,6 @@ cap.SmsSend("15****6956")
 
 ```
 cap = captcha.New("redis://:password@localost:6379/10", "accessKey", "secretKey", "SMS_******", "签名", false)
-cap.SetCategroy("sms-code") // your can give the default value
+cap.SetCategroy("register-code") // your can give the default value
 cap.SmsSend("15****6956")
 ```
