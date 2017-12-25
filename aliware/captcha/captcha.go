@@ -65,7 +65,7 @@ func (c *Captcha) GenerateAndSend(mobile string, ttl, intervalTtl, length int) (
 		code := string(randStr(length, NUM))
 		if ok, err := c.Sending(mobile, map[string]string{"captcha": code}); ok {
 			intervalOk, _ := c.store.SetEx(intervalKey, code, intervalTtl)
-			ok, _ := c.store.SetNx(c.getRedisKey(mobile), code, ttl)
+			ok, _ := c.store.SetEx(c.getRedisKey(mobile), code, ttl)
 			if intervalOk && ok {
 				return code, SendSmsSuccess, nil
 			} else {
