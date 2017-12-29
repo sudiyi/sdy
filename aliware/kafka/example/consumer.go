@@ -6,6 +6,7 @@ import (
 	"github.com/tidwall/gjson"
 	"os"
 	"os/signal"
+	"syscall"
 )
 
 var jsonConfigString = `
@@ -28,7 +29,7 @@ func main() {
 	t = append(t, topics[0].String())
 
 	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
+	signal.Notify(signals, syscall.SIGUSR1, syscall.SIGINT, syscall.SIGTERM)
 
 	client := kafka.New(s, ak, password, true)
 	consumer, err := client.NewConsumer(consumerId, t, `oldest`)
