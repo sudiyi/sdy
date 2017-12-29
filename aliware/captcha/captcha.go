@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	DefaultLen = 4
-	Expiration = 10 * 60
+	DefaultLen             = 4
+	Expiration             = 10 * 60 // captcha expire time
+	ExpireLimitEachCaptcha = 60      // twice interval
 
 	DefaultCategory = "sms-code"
 
@@ -31,8 +32,9 @@ type Captcha struct {
 }
 
 func New(dsn, accessKey, secretKey, templateCode, signName string, debug bool) *Captcha {
+	store, _ := redisclient.NewRedisClient(dsn)
 	return &Captcha{
-		store:        redisclient.NewRedisClient(dsn),
+		store:        store,
 		accessKey:    accessKey,
 		secretKey:    secretKey,
 		templateCode: templateCode,
@@ -43,7 +45,7 @@ func New(dsn, accessKey, secretKey, templateCode, signName string, debug bool) *
 }
 
 func (c *Captcha) SmsSend(mobile string) (string, int, error) {
-	return c.GenerateAndSend(mobile, Expiration, DefaultLen)
+	return c.GenerateAndSend(mobile, Expiration, ExpireLimitEachCaptcha, DefaultLen)
 }
 
 func (c *Captcha) SetCategory(category string) *Captcha {
@@ -55,18 +57,23 @@ func (c *Captcha) SmsVerify(mobile, code string) bool {
 	return c.verify(mobile, code)
 }
 
-func (c *Captcha) GenerateAndSend(mobile string, ttl int, length int) (string, int, error) {
-	code := string(randStr(length, NUM))
-	key := c.getRedisKey(mobile, code)
-
-	if ok, _ := c.store.SetNx(key, code, ttl); ok {
+func (c *Captcha) GenerateAndSend(mobile string, ttl, intervalTtl, length int) (string, int, error) {
+	intervalKey := c.getIntervalRedisKey(mobile)
+	if ok, _ := c.store.Exists(intervalKey); ok {
+		return "", SendSmsOperateTooMuch, errors.New("operate too much")
+	} else {
+		code := string(randStr(length, NUM))
 		if ok, err := c.Sending(mobile, map[string]string{"captcha": code}); ok {
-			return code, SendSmsSuccess, nil
+			intervalOk, _ := c.store.SetEx(intervalKey, code, intervalTtl)
+			ok, _ := c.store.SetEx(c.getRedisKey(mobile), code, ttl)
+			if intervalOk && ok {
+				return code, SendSmsSuccess, nil
+			} else {
+				return "", SendSmsFail, err
+			}
 		} else {
 			return "", SendSmsFail, err
 		}
-	} else {
-		return "", SendSmsOperateTooMuch, errors.New("operate too much")
 	}
 }
 
@@ -86,18 +93,22 @@ func (c *Captcha) Sending(mobile string, params map[string]string) (bool, error)
 	return true, nil
 }
 
-func (c *Captcha) getRedisKey(mobile, code string) string {
-	return strings.Join([]string{mobile, c.Category, code}, "-")
+func (c *Captcha) getRedisKey(mobile string) string {
+	return strings.Join([]string{mobile, c.Category}, "-")
+}
+
+func (c *Captcha) getIntervalRedisKey(mobile string) string {
+	return strings.Join([]string{mobile, c.Category, "interval"}, "-")
 }
 
 func (c *Captcha) verify(mobile, code string) bool {
-	key := c.getRedisKey(mobile, code)
+	key := c.getRedisKey(mobile)
+	realCode, _ := c.store.Get(key)
 
-	if ok, _ := c.store.Exists(key); !ok {
-		return false
+	if code == realCode {
+		if ok, _ := c.store.Del(key); ok {
+			return true
+		}
 	}
-	if ok, _ := c.store.Del(key); !ok {
-		return false
-	}
-	return true
+	return false
 }

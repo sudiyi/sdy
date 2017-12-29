@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"log"
-	"sync"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -26,9 +25,6 @@ type RedisClient struct {
 	server string
 	db     string
 }
-
-var redisInstance *RedisClient
-var redisOnce sync.Once
 
 // The Redis client connection
 func NewRedisClient(dsn string) (*RedisClient, error) {
