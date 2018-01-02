@@ -2,8 +2,8 @@ package tingyun_gorm
 
 import (
 	tingyun "github.com/TingYunAPM/go"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"github.com/sudiyi/sdy/utils"
 )
 
 type Gorm struct {
@@ -15,10 +15,11 @@ type Gorm struct {
 func NewGorm(dsn string) (*Gorm, error) {
 	g := &Gorm{}
 	var db *gorm.DB
-	var err error
-	if g.host, _, g.dbName, err = utils.MysqlDsnParse(dsn); nil != err {
+	my, err := mysql.ParseDSN(dsn)
+	if nil != err {
 		return nil, err
 	}
+	g.host, g.dbName = my.Addr, my.DBName
 
 	if db, err = gorm.Open("mysql", dsn); nil != err {
 		return nil, err
