@@ -4,7 +4,7 @@
 import (
 	tingyun "github.com/TingYunAPM/go"
 	"github.com/sudiyi/sdy/tingyun_sdy"
-	"github.com/sudiyi/sdy/tingyun/tingyun_gorm"
+	"github.com/sudiyi/sdy/tingyun_sdy/tingyun_gorm"
 )
 
 var g *tingyun_gorm.Gorm
