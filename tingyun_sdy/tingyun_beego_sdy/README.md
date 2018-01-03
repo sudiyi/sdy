@@ -12,16 +12,12 @@ import (
 	"github.com/sudiyi/sdy/tingyun_sdy/tingyun_beego_sdy"
 )
 
-func runBeego() {
+func main() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	orm.RegisterModel(&Admins{})
 	tingyun_beego_sdy.RegisterDataBase("default", "mysql", "root:password@tcp(127.0.0.1:3306)/test")
 	beego.Router("/user", &UserController{})
 	tingyun_beego.Run()
-}
-
-func main() {
-	runBeego()
 }
 ```
 
