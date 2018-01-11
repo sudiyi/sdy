@@ -134,7 +134,12 @@ func (client *RedisClient) Set(key, value string) (bool, error) {
 }
 
 func (client *RedisClient) SetEx(key string, value string, seconds int) (bool, error) {
-	return redis.Bool(client.Do("SETEX", key, seconds, value))
+	resp, err := client.Do("SETEX", key, seconds, value)
+	if resp == "OK" {
+		return true, nil
+	} else {
+		return false, err
+	}
 }
 
 func (client *RedisClient) SetNx(key string, value string, seconds int) (bool, error) {
