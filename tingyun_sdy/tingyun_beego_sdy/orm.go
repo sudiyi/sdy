@@ -31,11 +31,15 @@ type Orm struct {
 }
 
 func NewOrm(action *tingyun.Action) *Orm {
-	return NewOrmByName(action, "default")
+	return NewOrmEx(action, "default", 2)
 }
 
 func NewOrmByOrmName(action *tingyun.Action, ormName string) *Orm {
-	pc, _, _, _ := runtime.Caller(1)
+	return NewOrmEx(action, ormName, 2)
+}
+
+func NewOrmEx(action *tingyun.Action, ormName string, callerSkip int) *Orm {
+	pc, _, _, _ := runtime.Caller(callerSkip)
 	o := &Orm{action: action, name: runtime.FuncForPC(pc).Name()}
 	o.Ormer = orm.NewOrm()
 	if "default" != ormName {
