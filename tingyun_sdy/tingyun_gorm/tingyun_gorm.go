@@ -1,6 +1,8 @@
 package tingyun_gorm
 
 import (
+	"runtime"
+
 	tingyun "github.com/TingYunAPM/go"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -57,11 +59,16 @@ func (g *Gorm) registerTingyun() {
 	})
 }
 
-func (g *Gorm) NewDb(action *tingyun.Action, name string) *gorm.DB {
+func (g *Gorm) NewDbWithName(action *tingyun.Action, name string) *gorm.DB {
 	db := g.DbRoot.New()
 	db.InstantSet("ty:action", action)
 	db.InstantSet("ty:name", name)
 	return db
+}
+
+func (g *Gorm) NewDb(action *tingyun.Action) *gorm.DB {
+	pc, _, _, _ := runtime.Caller(1)
+	return g.NewDbWithName(action, runtime.FuncForPC(pc).Name())
 }
 
 func (g *Gorm) beforeCb(scope *gorm.Scope, op string) {

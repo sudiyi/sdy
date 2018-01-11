@@ -2,6 +2,7 @@ package tingyun_sdy
 
 import (
 	"reflect"
+	"runtime"
 
 	tingyun "github.com/TingYunAPM/go"
 )
@@ -12,7 +13,7 @@ type Action struct {
 
 const argsBeginIndex = 2
 
-func (a *Action) Run(name string, parent *tingyun.Component, f interface{}, args ...interface{}) {
+func (a *Action) RunWithName(name string, parent *tingyun.Component, f interface{}, args ...interface{}) {
 	vf := reflect.ValueOf(f)
 	if reflect.Func != vf.Kind() {
 		return
@@ -34,4 +35,9 @@ func (a *Action) Run(name string, parent *tingyun.Component, f interface{}, args
 
 	vfArgs[1] = reflect.ValueOf(component)
 	vf.Call(vfArgs)
+}
+
+func (a *Action) Run(parent *tingyun.Component, f interface{}, args ...interface{}) {
+	name := runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
+	a.RunWithName(name, parent, f, args...)
 }
