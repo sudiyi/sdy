@@ -1,6 +1,8 @@
 package tingyun_beego_sdy
 
 import (
+	"runtime"
+
 	tingyun "github.com/TingYunAPM/go"
 	"github.com/astaxie/beego/orm"
 	"github.com/sudiyi/sdy/utils"
@@ -28,12 +30,13 @@ type Orm struct {
 	name   string
 }
 
-func NewOrm(action *tingyun.Action, name string) *Orm {
-	return NewOrmByName(action, name, "default")
+func NewOrm(action *tingyun.Action) *Orm {
+	return NewOrmByName(action, "default")
 }
 
-func NewOrmByName(action *tingyun.Action, name string, ormName string) *Orm {
-	o := &Orm{action: action, name: name}
+func NewOrmByOrmName(action *tingyun.Action, ormName string) *Orm {
+	pc, _, _, _ := runtime.Caller(1)
+	o := &Orm{action: action, name: runtime.FuncForPC(pc).Name()}
 	o.Ormer = orm.NewOrm()
 	if "default" != ormName {
 		o.Using(ormName)
