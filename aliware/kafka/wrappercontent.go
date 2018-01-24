@@ -27,7 +27,8 @@ func ContentWrapper(kafkaType int, userAgent string, content map[string]interfac
 }
 
 func headerWrapper(kafkaType int, userAgent string) *HeaderWrapper {
-	uid := fmt.Sprintf("%s", uuid.NewV4())
+	result, _ := uuid.NewV4()
+	uid := fmt.Sprintf("%s", result)
 	return &HeaderWrapper{
 		Timestamp: time.Now().UnixNano() / 1000 / 1000,
 		Type:      kafkaType,
