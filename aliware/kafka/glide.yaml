@@ -10,3 +10,5 @@ import:
 - package: github.com/sudiyi/sdy
   subpackages:
   - aliware/kafka
+- package: github.com/satori/go.uuid
+  version: ^1.2.0

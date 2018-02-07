@@ -6,32 +6,48 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-var jsonString = `
+var demoJsonString = `
 {
-  "topics": ["your topic"],
-  "servers": ["kafka-ons-internet.aliyun.com:8080"],
-  "ak": "Access Key",
-  "password": "password",
-  "consumerId": "your consumer id",
+  "topics": ["demo"],
+  "servers": ["kafka1:9092"],
+  "consumerId": "demo-consumer-group",
 }
 `
 
 func main() {
-	results := gjson.GetMany(jsonString, "servers", "ak", "password", "consumerId", "topics")
-	servers, ak, password := results[0].Array(), results[1].String(), results[2].String()
-	s := []string{}
+	results := gjson.GetMany(demoJsonString, "servers", "consumerId", "topics")
+	servers := results[0].Array()
+	var s []string
 	s = append(s, servers[0].String())
-	_, topics := results[3].String(), results[4].Array()
+	_, topics := results[1].String(), results[2].Array()
 
-	// litte concurrency
-	syncProducer(s, ak, password, topics[0].String())
-
-	// high concurrency
-	asyncProducer(s, ak, password, topics[0].String())
+	//// litte concurrency
+	syncNonProducer(s, topics[0].String())
+	//
+	//// high concurrency
+	asyncNonProducer(s, topics[0].String())
 }
 
-func asyncProducer(s []string, ak, password string, topic string) {
-	client := kafka.New(s, ak, password, false)
+func syncNonProducer(s []string, topic string) {
+	client := kafka.New(s, true)
+	p, _ := client.NewProducer(topic)
+
+	var i int
+
+	for {
+		for _, key := range []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"} {
+			//for _, key := range []string{"A"} {
+			fmt.Println(p.Produce(key+"-NEW-TEST", `{"a": 1, "b": [{"a": 1}]}`))
+		}
+		i += 1
+		if i > 0 {
+			break
+		}
+	}
+}
+
+func asyncNonProducer(s []string, topic string) {
+	client := kafka.New(s, true)
 	p, _ := client.NewAsyncProducer(topic)
 	defer p.AsyncClose()
 
@@ -41,25 +57,6 @@ func asyncProducer(s []string, ak, password string, topic string) {
 		for _, key := range []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"} {
 			//for _, key := range []string{"A"} {
 			p.AsyncProduce(key+"-GOOD", `{"a": 1, "b": [{"a": 1}]}`)
-		}
-		i += 1
-		if i > 0 {
-			break
-		}
-	}
-
-}
-
-func syncProducer(s []string, ak, password string, topic string) {
-	client := kafka.New(s, ak, password, false)
-	p, _ := client.NewProducer(topic)
-
-	var i int
-
-	for {
-		for _, key := range []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"} {
-			//for _, key := range []string{"A"} {
-			fmt.Println(p.Produce(key+"-NEW-TEST", `{"a": 1, "b": [{"a": 1}]}`))
 		}
 		i += 1
 		if i > 0 {

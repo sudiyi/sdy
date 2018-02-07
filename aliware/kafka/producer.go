@@ -18,7 +18,16 @@ type Producer struct {
 	AsyncProducer sarama.AsyncProducer
 }
 
-func (c *Client) initConfigForProducer() *sarama.Config {
+func (c *Client) initProducer() (*sarama.Config, error) {
+	switch c.encrypt {
+	case "aliware":
+		return c.initWithAliwareCertificateProducer()
+	default:
+		return c.initWithNonCertificateProducer()
+	}
+}
+
+func (c *Client) initBasicWithAliwareCertificateProducer() *sarama.Config {
 	mqConfig := sarama.NewConfig()
 	mqConfig.Net.SASL.Enable = true
 	mqConfig.Net.SASL.User = c.accessKey
@@ -31,9 +40,8 @@ func (c *Client) initConfigForProducer() *sarama.Config {
 	return mqConfig
 }
 
-func (c *Client) initProducer() (*sarama.Config, error) {
-	mqConfig := c.initConfigForProducer()
-
+func (c *Client) initWithAliwareCertificateProducer() (*sarama.Config, error) {
+	mqConfig := c.initBasicWithAliwareCertificateProducer()
 	clientCertPool, err := c.AppendValidateCertificate()
 	if err != nil {
 		return nil, err
@@ -51,6 +59,15 @@ func (c *Client) initProducer() (*sarama.Config, error) {
 		log.Println(msg)
 	}
 	return mqConfig, err
+}
+
+func (c *Client) initWithNonCertificateProducer() (*sarama.Config, error) {
+	config := sarama.NewConfig()
+	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.Return.Errors = true
+	config.Producer.Return.Successes = true
+	config.Producer.Partitioner = sarama.NewHashPartitioner
+	return config, nil
 }
 
 func (c *Client) NewProducer(topic string) (*Producer, error) {

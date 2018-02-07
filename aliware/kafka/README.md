@@ -20,7 +20,9 @@ import(
     "github.com/sudiyi/sdy/aliware/kafka"
 )
 
-client := kafka.New(servers, accessKey, password, debug)
+client := kafka.New(servers, debug)
+# NOTES: default encrypt is non, only support for aliware and non 
+client.encryptByAliware(accessKey, password)
 producer, err := client.NewProducer(topic)
 if err != nil {
     panic(err)

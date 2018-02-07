@@ -9,28 +9,30 @@ import (
 	"syscall"
 )
 
-var demoConfigConsumerString = `
+var jsonConfigString = `
 {
-  "topics": ["demo"],
-  "servers": ["kafka1:9092"],
-  "consumerId": "demo-consumer-group",
+  "topics": ["your topic"],
+  "servers": ["kafka-ons-internet.aliyun.com:8080"],
+  "ak": "Access Key",
+  "password": "password",
+  "consumerId": "your consumer id",
 }
 `
 
 func main() {
-	results := gjson.GetMany(demoConfigConsumerString, "servers", "consumerId", "topics")
-	servers := results[0].Array()
-	var s []string
+	results := gjson.GetMany(jsonConfigString, "servers", "ak", "password", "consumerId", "topics")
+	servers, ak, password := results[0].Array(), results[1].String(), results[2].String()
+	consumerId, topics := results[3].String(), results[4].Array()
+
+	s, t := []string{}, []string{}
 	s = append(s, servers[0].String())
-	consumerId, topics := results[1].String(), results[2].Array()
-	var t []string
 	t = append(t, topics[0].String())
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGUSR1, syscall.SIGINT, syscall.SIGTERM)
 
 	client := kafka.New(s, true)
-	consumer, err := client.NewConsumer(consumerId, t, `oldest`)
+	consumer, err := client.EncryptByAliware(ak, password).NewConsumer(consumerId, t, `oldest`)
 	if err != nil {
 		panic(err)
 	}

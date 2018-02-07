@@ -37,7 +37,7 @@ func (wrapper *kafkaConsumerMessageWrapper) Partition() int32 {
 	return wrapper.message.Partition
 }
 
-func (c *Client) initConfigForConsumer(offset string) *cluster.Config {
+func (c *Client) initBasicWithAliwareCertificateConsumer(offset string) *cluster.Config {
 	clusterCfg := cluster.NewConfig()
 
 	clusterCfg.Net.SASL.Enable = true
@@ -68,7 +68,16 @@ func (c *Client) getInitialOffset(offset string) int64 {
 }
 
 func (c *Client) initConsumer(offset string) (*cluster.Config, error) {
-	clusterCfg := c.initConfigForConsumer(offset)
+	switch c.encrypt {
+	case "aliware":
+		return c.initWithAliwareCertificateConsumer(offset)
+	default:
+		return c.initWithNonCertificateConsumer(offset)
+	}
+}
+
+func (c *Client) initWithAliwareCertificateConsumer(offset string) (*cluster.Config, error) {
+	clusterCfg := c.initBasicWithAliwareCertificateConsumer(offset)
 	clientCertPool, err := c.AppendValidateCertificate()
 	if err != nil {
 		return nil, err
@@ -82,6 +91,16 @@ func (c *Client) initConsumer(offset string) (*cluster.Config, error) {
 		log.Println(msg)
 		panic(msg)
 	}
+	return clusterCfg, nil
+}
+
+func (c *Client) initWithNonCertificateConsumer(offset string) (*cluster.Config, error) {
+	clusterCfg := cluster.NewConfig()
+
+	clusterCfg.Consumer.Return.Errors = true
+	clusterCfg.Consumer.Offsets.Initial = c.getInitialOffset(offset)
+	clusterCfg.Group.Return.Notifications = true
+	clusterCfg.Version = sarama.V0_10_0_0
 	return clusterCfg, nil
 }
 

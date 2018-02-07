@@ -2,11 +2,11 @@ package kafka
 
 import (
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"github.com/Shopify/sarama"
 	"log"
 	"os"
-	"errors"
 )
 
 const AliyunCertificate = `
@@ -37,14 +37,22 @@ type Client struct {
 	accessKey string
 	password  string
 	debug     bool
+	encrypt   string
 }
 
-func New(servers []string, accessKey, password string, debug bool) *Client {
+func New(servers []string, debug bool) *Client {
 	fmt.Println("init kafka client")
 	if debug {
 		sarama.Logger = log.New(os.Stdout, "[sarama] ", log.LstdFlags)
 	}
-	return &Client{servers: servers, accessKey: accessKey, password: password}
+	return &Client{servers: servers}
+}
+
+func (c *Client) EncryptByAliware(accessKey, password string) *Client {
+	c.accessKey = accessKey
+	c.password = password
+	c.encrypt = "aliware"
+	return c
 }
 
 func (c *Client) AppendValidateCertificate() (*x509.CertPool, error) {
