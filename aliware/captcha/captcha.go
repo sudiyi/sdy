@@ -5,11 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/GiterLab/aliyun-sms-go-sdk/dysms"
-	"github.com/GiterLab/aliyun-sms-go-sdk/sms"
 	"github.com/sudiyi/sdy/redisclient"
 	"github.com/tobyzxj/uuid"
 	"log"
-	"os"
 	"strings"
 )
 
