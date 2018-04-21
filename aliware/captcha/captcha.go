@@ -3,9 +3,13 @@ package captcha
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/GiterLab/aliyun-sms-go-sdk/dysms"
 	"github.com/GiterLab/aliyun-sms-go-sdk/sms"
 	"github.com/sudiyi/sdy/redisclient"
+	"github.com/tobyzxj/uuid"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -78,18 +82,19 @@ func (c *Captcha) GenerateAndSend(mobile string, ttl, intervalTtl, length int) (
 }
 
 func (c *Captcha) Sending(mobile string, params map[string]string) (bool, error) {
-	sms.HttpDebugEnable = c.debug
-	newSms := sms.New(c.accessKey, c.secretKey)
+	dysms.HTTPDebugEnable = c.debug
+	dysms.SetACLClient(c.accessKey, c.secretKey)
 	paramBytes, err := json.Marshal(params)
 	if err != nil {
 		return false, err
 	}
 	paramString := string(paramBytes)
-	e, err := newSms.SendOne(mobile, c.signName, c.templateCode, paramString)
+	respSendSms, err := dysms.SendSms(uuid.New(), mobile, c.signName, c.templateCode, paramString).DoActionWithException()
 	if err != nil {
+		fmt.Println("send sms failed", err, respSendSms.Error())
 		return false, err
 	}
-	log.Println("send sms succeed, mobile:", mobile, paramString, e.GetRequestId())
+	log.Println("send sms succeed, mobile:", mobile, paramString, respSendSms.GetRequestID())
 	return true, nil
 }
 
