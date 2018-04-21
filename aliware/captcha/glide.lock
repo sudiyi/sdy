@@ -1,5 +1,5 @@
 hash: abb65ba2226c4ad1511e87453a4a810fa94fb73b88b0f4df0e12ad929e14dcc6
-updated: 2018-04-21T13:42:34.84372+08:00
+updated: 2018-04-21T17:32:26.269506+08:00
 imports:
 - name: github.com/garyburd/redigo
   version: 569eae59ada904ea8db7a225c2b47165af08735a
@@ -9,13 +9,14 @@ imports:
 - name: github.com/GiterLab/aliyun-sms-go-sdk
   version: fcc9f11de968b3470ec55298e8a7f8f21588cd21
   subpackages:
+  - dysms
   - sms
 - name: github.com/GiterLab/urllib
   version: ea0e875f90303d1469067f22ccda69f903380a87
 - name: github.com/go-sql-driver/mysql
   version: 3287d94d4c6a48a63e16fffaabf27ab20203af2a
 - name: github.com/sudiyi/sdy
-  version: 95b9789ca20d089fb8d9ea7dde85b92471d9d5b8
+  version: a2d7e75a15a09676cfaa2be500d6b25d63c4380b
   subpackages:
   - aliware/captcha
   - redisclient
