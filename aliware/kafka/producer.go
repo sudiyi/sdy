@@ -44,9 +44,10 @@ func (c *Client) initBasicWithAliwareCertificateProducer() *sarama.Config {
 	mqConfig.Producer.Retry.Backoff = 10 * time.Second
 	mqConfig.Producer.Retry.Max = 3
 	
-	mqConfig.Metadata.Retry.Max = 1
+	mqConfig.Metadata.Retry.Max = 3
 	mqConfig.Metadata.Retry.Backoff = 10 * time.Second
 	mqConfig.Metadata.RefreshFrequency = 15 * time.Minute
+	mqConfig.Metadata.Retry.Backoff = 30 * time.Second
 	return mqConfig
 }
 
