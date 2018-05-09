@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Shopify/sarama"
 	"log"
+	"time"
 )
 
 const (
@@ -33,10 +34,19 @@ func (c *Client) initBasicWithAliwareCertificateProducer() *sarama.Config {
 	mqConfig.Net.SASL.User = c.accessKey
 	mqConfig.Net.SASL.Password = c.password
 	mqConfig.Net.SASL.Handshake = true
+	mqConfig.Net.ReadTimeout = 10 * time.Second
+	mqConfig.Net.DialTimeout = 10 * time.Second
+	mqConfig.Net.WriteTimeout = 10 * time.Second
 
 	mqConfig.Net.TLS.Enable = true
 	mqConfig.Producer.Return.Errors = true
 	mqConfig.Producer.Return.Successes = true
+	mqConfig.Producer.Retry.Backoff = 10 * time.Second
+	mqConfig.Producer.Retry.Max = 3
+	
+	mqConfig.Metadata.Retry.Max = 1
+	mqConfig.Metadata.Retry.Backoff = 10 * time.Second
+	mqConfig.Metadata.RefreshFrequency = 15 * time.Minute
 	return mqConfig
 }
 
