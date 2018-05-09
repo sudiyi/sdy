@@ -1,21 +1,22 @@
 hash: abb65ba2226c4ad1511e87453a4a810fa94fb73b88b0f4df0e12ad929e14dcc6
-updated: 2017-12-14T22:53:32.002306+08:00
+updated: 2018-04-21T17:32:26.269506+08:00
 imports:
 - name: github.com/garyburd/redigo
-  version: 5f161ed9cfbce31e5a0ec0b1c3c81087e2e9cbef
+  version: 569eae59ada904ea8db7a225c2b47165af08735a
   subpackages:
   - internal
   - redis
 - name: github.com/GiterLab/aliyun-sms-go-sdk
-  version: f03ed002a2a5e311f5629687d0141dec646e4cc6
+  version: fcc9f11de968b3470ec55298e8a7f8f21588cd21
   subpackages:
+  - dysms
   - sms
 - name: github.com/GiterLab/urllib
   version: ea0e875f90303d1469067f22ccda69f903380a87
 - name: github.com/go-sql-driver/mysql
-  version: 9181e3a86a19bacd63e68d43ae8b7b36320d8092
+  version: 3287d94d4c6a48a63e16fffaabf27ab20203af2a
 - name: github.com/sudiyi/sdy
-  version: 00a15b7312a59db0bd915edcae0e05a1fb594e22
+  version: a2d7e75a15a09676cfaa2be500d6b25d63c4380b
   subpackages:
   - aliware/captcha
   - redisclient
@@ -23,7 +24,7 @@ imports:
 - name: github.com/tobyzxj/uuid
   version: aa0153c14395f4431fe668071eeda5d4a0290f95
 - name: google.golang.org/appengine
-  version: 5bee14b453b4c71be47ec1781b0fa61c2ea182db
+  version: 0a24098c0ec68416ec050f567f75df563d6b231e
   subpackages:
   - cloudsql
 testImports: []
