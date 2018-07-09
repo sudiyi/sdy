@@ -26,7 +26,7 @@ imports:
 - name: github.com/rcrowley/go-metrics
   version: e181e095bae94582363434144c61a9653aff6e50
 - name: github.com/satori/go.uuid
-  version: f58768cc1a7a7e77a3bd49e98cdd21419399b6a3
+  version: 36e9d2ebbde5e3f13ab2e25625fd453271d6522e
 - name: github.com/Shopify/sarama
   version: f7be6aa2bc7b2e38edf816b08b582782194a1c02
 - name: github.com/sudiyi/sdy
