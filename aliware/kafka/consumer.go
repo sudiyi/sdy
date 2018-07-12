@@ -3,9 +3,10 @@ package kafka
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/Shopify/sarama"
-	"github.com/bsm/sarama-cluster"
 	"log"
+
+	"github.com/Shopify/sarama"
+	cluster "github.com/bsm/sarama-cluster"
 )
 
 // AliyunConsumer .
@@ -37,7 +38,7 @@ func (wrapper *kafkaConsumerMessageWrapper) Partition() int32 {
 	return wrapper.message.Partition
 }
 
-func (c *Client) initBasicWithAliwareCertificateConsumer(offset string) *cluster.Config {
+func (c *Client) initBasicWithAliwareCertificateConsumer(offset string, version sarama.KafkaVersion) *cluster.Config {
 	clusterCfg := cluster.NewConfig()
 
 	clusterCfg.Net.SASL.Enable = true
@@ -50,7 +51,7 @@ func (c *Client) initBasicWithAliwareCertificateConsumer(offset string) *cluster
 	clusterCfg.Consumer.Return.Errors = true
 	clusterCfg.Consumer.Offsets.Initial = c.getInitialOffset(offset)
 	clusterCfg.Group.Return.Notifications = true
-	clusterCfg.Version = sarama.V0_10_0_0
+	clusterCfg.Version = version
 	return clusterCfg
 }
 
@@ -67,17 +68,17 @@ func (c *Client) getInitialOffset(offset string) int64 {
 	return initialOffset
 }
 
-func (c *Client) initConsumer(offset string) (*cluster.Config, error) {
+func (c *Client) initConsumer(offset string, version sarama.KafkaVersion) (*cluster.Config, error) {
 	switch c.encrypt {
 	case "aliware":
-		return c.initWithAliwareCertificateConsumer(offset)
+		return c.initWithAliwareCertificateConsumer(offset, version)
 	default:
-		return c.initWithNonCertificateConsumer(offset)
+		return c.initWithNonCertificateConsumer(offset, version)
 	}
 }
 
-func (c *Client) initWithAliwareCertificateConsumer(offset string) (*cluster.Config, error) {
-	clusterCfg := c.initBasicWithAliwareCertificateConsumer(offset)
+func (c *Client) initWithAliwareCertificateConsumer(offset string, version sarama.KafkaVersion) (*cluster.Config, error) {
+	clusterCfg := c.initBasicWithAliwareCertificateConsumer(offset, version)
 	clientCertPool, err := c.AppendValidateCertificate()
 	if err != nil {
 		return nil, err
@@ -94,18 +95,21 @@ func (c *Client) initWithAliwareCertificateConsumer(offset string) (*cluster.Con
 	return clusterCfg, nil
 }
 
-func (c *Client) initWithNonCertificateConsumer(offset string) (*cluster.Config, error) {
+func (c *Client) initWithNonCertificateConsumer(offset string, version sarama.KafkaVersion) (*cluster.Config, error) {
 	clusterCfg := cluster.NewConfig()
 
 	clusterCfg.Consumer.Return.Errors = true
 	clusterCfg.Consumer.Offsets.Initial = c.getInitialOffset(offset)
 	clusterCfg.Group.Return.Notifications = true
-	clusterCfg.Version = sarama.V0_10_0_0
+	clusterCfg.Version = version
 	return clusterCfg, nil
 }
 
-func (c *Client) NewConsumer(consumerId string, topics []string, offset string) (*AliyunConsumer, error) {
-	clusterCfg, err := c.initConsumer(offset)
+func (c *Client) NewConsumer(consumerId string, topics []string, offset string, version ...sarama.KafkaVersion) (*AliyunConsumer, error) {
+	if len(version) == 0 {
+		version = []sarama.KafkaVersion{sarama.V0_10_0_0}
+	}
+	clusterCfg, err := c.initConsumer(offset, version[0])
 	if err != nil {
 		return nil, err
 	}
