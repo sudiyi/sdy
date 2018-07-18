@@ -48,6 +48,7 @@ func (c *Client) initBasicWithAliwareCertificateProducer() *sarama.Config {
 	mqConfig.Metadata.Retry.Backoff = 10 * time.Second
 	mqConfig.Metadata.RefreshFrequency = 15 * time.Minute
 	mqConfig.Metadata.Retry.Backoff = 30 * time.Second
+	mqConfig.Version = sarama.V0_10_0_0
 	return mqConfig
 }
 
@@ -78,6 +79,7 @@ func (c *Client) initWithNonCertificateProducer() (*sarama.Config, error) {
 	config.Producer.Return.Errors = true
 	config.Producer.Return.Successes = true
 	config.Producer.Partitioner = sarama.NewHashPartitioner
+	config.Version = sarama.V0_10_0_0
 	return config, nil
 }
 
