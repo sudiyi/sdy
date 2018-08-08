@@ -7,6 +7,7 @@ type Message interface {
 	Value() []byte
 	Offset() int64
 	Partition() int32
+	Timestamp() time.Time
 }
 
 // Consumer mq consumer client

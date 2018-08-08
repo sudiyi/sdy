@@ -38,6 +38,10 @@ func (wrapper *kafkaConsumerMessageWrapper) Partition() int32 {
 	return wrapper.message.Partition
 }
 
+func (wrapper *kafkaConsumerMessageWrapper) Timestamp() time.Time {
+	return wrapper.message.Timestamp
+}
+
 func (c *Client) initBasicWithAliwareCertificateConsumer(offset string, version sarama.KafkaVersion) *cluster.Config {
 	clusterCfg := cluster.NewConfig()
 
