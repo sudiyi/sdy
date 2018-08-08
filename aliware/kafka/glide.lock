@@ -1,40 +1,38 @@
-hash: ab2f3cfe86533b38b995f3d075a505af24b882307e5b56561c3051890d0a3662
-updated: 2018-05-22T17:19:21.406307+08:00
+hash: d29e9600c608eda90b66b2d9462f97bc88d514b1d899fd960ed5e9015b243180
+updated: 2018-07-17T10:50:17.191054+08:00
 imports:
 - name: github.com/bsm/sarama-cluster
   version: cf455bc755fe41ac9bb2861e7a961833d9c2ecc3
 - name: github.com/davecgh/go-spew
-  version: ecdeabc65495df2dec95d7c4a4c3e021903035e5
+  version: 8991bc29aa16c548c550c7ff78260e27b9ab7c73
   subpackages:
   - spew
 - name: github.com/eapache/go-resiliency
-  version: b1fe83b5b03f624450823b751b662259ffc6af70
+  version: ea41b0fad31007accc7f806884dcdf3da98b79ce
   subpackages:
   - breaker
 - name: github.com/eapache/go-xerial-snappy
-  version: bb955e01b9346ac19dc29eb16586c90ded99a98c
+  version: 040cc1a32f578808623071247fdbd5cc43f37f5f
 - name: github.com/eapache/queue
-  version: 44cc805cf13205b55f69e14bcb69867d1ae92f98
+  version: 093482f3f8ce946c05bcba64badd2c82369e084d
 - name: github.com/golang/snappy
-  version: 553a641470496b2327abcac10b36396bd98e45c9
+  version: 2e65f85255dbc3072edf28d6b5b8efc472979f5a
 - name: github.com/pierrec/lz4
-  version: 2fcda4cb7018ce05a25959d2fe08c83e3329f169
-- name: github.com/pierrec/xxHash
-  version: a0006b13c722f7f12368c00a3d3c2ae8a999a0c6
+  version: 6b9367c9ff401dbc54fabce3fb8d972e799b702d
   subpackages:
-  - xxHash32
+  - internal/xxh32
 - name: github.com/rcrowley/go-metrics
-  version: e181e095bae94582363434144c61a9653aff6e50
+  version: e2704e165165ec55d062f5919b4b29494e9fa790
 - name: github.com/satori/go.uuid
   version: 36e9d2ebbde5e3f13ab2e25625fd453271d6522e
 - name: github.com/Shopify/sarama
-  version: f7be6aa2bc7b2e38edf816b08b582782194a1c02
+  version: 35324cf48e33d8260e1c7c18854465a904ade249
 - name: github.com/sudiyi/sdy
-  version: 1cb276d98efb1cd3cbeee3430cdfd0117e184e53
+  version: efaeea90bfb330a01467c0950d0b0bf90235092a
   subpackages:
   - aliware/kafka
 - name: github.com/tidwall/gjson
-  version: 01f00f129617a6fe98941fb920d6c760241b54d2
+  version: f123b340873a0084cb27267eddd8ff615115fbff
 - name: github.com/tidwall/match
   version: 1731857f09b1f38450e2c12409748407822dc6be
 testImports: []
