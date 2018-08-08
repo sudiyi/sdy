@@ -1,5 +1,7 @@
 package kafka
 
+import "time"
+
 // Message MQ message
 type Message interface {
 	Key() []byte
