@@ -3,6 +3,7 @@ package rails_logger
 import (
 	"bytes"
 	"fmt"
+	"github.com/satori/go.uuid"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -80,6 +81,7 @@ func log(c *gin.Context, out io.Writer) {
 	c.Writer = &writer{c.Writer, dup}
 	reqBody, _ := ioutil.ReadAll(c.Request.Body)
 	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(reqBody))
+	c.Set("request_id", getRequestID())
 
 	c.Next()
 
@@ -90,10 +92,11 @@ func log(c *gin.Context, out io.Writer) {
 
 	respBody := make([]byte, 128)
 	respBodyLen, _ := dup.Read(respBody)
-	fmt.Fprintf(out, "[G] %11v [%v] %15s %s%3d%s %s%s%s %s, Query: %s Parameters: %s | %s\n",
+	fmt.Fprintf(out, "[G] %11v [%v] %15s %s %s%3d%s %s%s%s %s, Query: %s Parameters: %s | %s\n",
 		end.Sub(start),
 		end.Format("2006/01/02 15:04:05"),
 		c.ClientIP(),
+		c.GetString("request_id"),
 		colorForStatus(statusCode), statusCode, reset,
 		colorForMethod(method), method, reset,
 		url.Path,
@@ -101,4 +104,10 @@ func log(c *gin.Context, out io.Writer) {
 		reqBody,
 		string(respBody[:respBodyLen]),
 	)
+}
+
+
+func getRequestID() string {
+	id,_:=uuid.NewV4()
+	return id.String()
 }
