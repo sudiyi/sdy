@@ -23,7 +23,7 @@ var registers map[string]func(r *gin.Engine) = map[string]func(r *gin.Engine){
 	},
 
 	"debug": func(r *gin.Engine) {
-		pprof.Register(r, nil)
+		pprof.Register(r)
 
 		r.GET("/debug/goroutines", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"num": runtime.NumGoroutine()})
